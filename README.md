@@ -59,7 +59,7 @@ Les intéractiosn avec la bombe et le manuel se font par des commandes.
 
 - page [id] : ouvre la page [id] du manuel
 
-## Types
+# Types
 
 ## Manuel
 
