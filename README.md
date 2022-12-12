@@ -24,10 +24,12 @@ Après cela le joueur peut voir la bombe, et le manuel.
 
 L'écran du joueur est divisé en 3 parties :
 
+```text
 |                 |                 |
 |      Bombe      |      Manuel     |
 | _ _ _ _ _ _ _ _ | _ _ _ _ _ _ _ _ |
 |        Liste des Commandes        |
+```
 
 ### Bombe
 
