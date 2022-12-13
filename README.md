@@ -57,15 +57,19 @@ La bombe et ces module sont représenté par des caractères ASCII.
 
 Les intéractiosn avec la bombe et le manuel se font par des commandes.
 
-### Commandes
+Le joueur peut déplacer la vue, afficher un module et intéragir avec lui.
 
-#### Bombe
+### Manuel
+
+Le manuel contient toutes les informations utulise au désamorsage de la bombe.
+
+Chaque module est expliquer et contient les façons de le résoudre.
+
+### Commandes
 
 - tourner [direction] : tourne la bombe dans la direction [direction] (haut, bas, gauche, droite)
 
 - module [id] : affiche le module [id] et les commandes associées
-
-#### Manuel
 
 - page suivante : affiche la page suivante du manuel
 
@@ -89,7 +93,7 @@ Le tableau des scores est composé de 3 colonnes de 10 lignes :
 
 Le score est calculé en fonction du nombre d'erreur commise, de la difficulter et du temps mis pour résoudre la bombe.
 
-Equation : `((Nombre de Module Fait * 1000) + (1000 * difficulté)) / (1 + (temps / temps max))`
+Equation : `((Nombre de Module Fait * 1000) * difficulté) / (1 + (temps / 60))`
 
 ## Paramètres
 
@@ -99,24 +103,96 @@ Le menu des paramètres permet de :
 
 ### Difficulté
 
-- Facile : `1`
+- Facile : Valeur 1 - Modules 3
 
-- Moyen : `2`
+- Moyen : Valeur 2 - Modules 6
 
-- Difficile : `3`
+- Difficile : Valeur 1 - Modules 9
 
-La difficulté est un nombre compris entre 1 et 3, plus la difficulté est élevé, plus la bombe est complexe et le score est élevé.
+Plus la difficulté est élevé, plus la bombe est complexe et le score est élevé.
 
-# Types
+# Informations Techniques
 
-## Manuel
+## Liste des Modules
+
+1. ### Coupe Fils
+
+#### Description et Objectif
+
+L'objectif de ce module est de coupé le bon fils parmis 5 fils, pour ce faire le joueur devera s'aider du manuel et de la théorie des ensemble.
+
+#### Page du Manuel
+
+```txt
+a = fil vertical, b = fil en diagonal (haut gauche) - c = fil en diagonal (haut droite)
+si un fil b est tout a gauche et qu'un fil a est tout a droite alors coupé le fil 4
+si un fil a est tout a gauche et qu'un fil b est tout a droite alors coupé le fil 5
+si tout les fils sont a alors coupé le fil 3
+si la suite abaca est vrais alors coupé le fil 1
+si cbacb est vrai alor coupé le fil 5
+```
+
+#### Commandes
+
+- couper fil [id] : coupe le fil n°[id]
+
+2. ### Module Terminal
+
+#### Description et Objectif
+
+L'objectif de ce module est d'utuliser des commande bash simple affain de supprimé un fichier ou de récupérer un code qui se trouve dans un fichier.
+
+#### Page du Manuel
+
+```txt
+cd : permet de ...
+rm : permet de ...
+pwd : permet de ...
+cat : permet de ...
+```
+
+#### Commandes
+
+- [commands] : effectue une action selon [commands]
+
+3. ### Module Cryptographie
+
+#### Description et Objectif
+
+L'objectif de ce module est d'utuliser de traduite un code secret crypter en binaire, morce, hexadecimal ou juste décaler.
+
+#### Page du Manuel
+
+```txt
+traduction du morce
+binaire
+```
+
+#### Commandes
+
+- [commands] : effectue une action selon [commands]
+
+## Types
+
+### Manuel
 
 - Page du manuel : `Page`
 
-## Bombe
+### Bombe
 
 - Bombe : `Bombe`
 
 - Face : `Face`
 
 - Module : `Module`
+
+### Autre
+
+- Score : `Score`
+
+
+# Exemple
+
+## Module : Coupé le bon Fil
+
+## Module : Terminal (supprimer fichier)
