@@ -17,14 +17,28 @@ Pas de gestion du temps prévue pour la version textuelle.
 
 # Traces d'exécution textuelle
 
-Au lance du jeu, le joueur a un résumé bref de sa mission lui expliquant le context et ce qu'il doit faire.
+Au lance du jeu, une menu principale souvre et celui ci permet de :
+
+- Lancer une partie
+
+- Tableau des Scores
+
+- Paramètres
+
+- Quitter
+
+## Lancer une partie
+
+Au lancement d'une partie, après cela il a un résumé bref de sa mission lui expliquant le context et ce qu'il doit faire.
 
 ```text
-Bonjour Agent Fédéral Owlo, vos services sont requis pour désamorcer une bombe.
+Bonjour Désamorceur, vous avez été choisi pour désamorcer une bombe.
 Voici votre manuel d'utilisation de la bombe, il vous expliquera comment la désamorcer.
+Cependant la bombe est instable, si vous faite 3 erreurs, la bombe explosera.
+Bon courage.
 ```
 
-Pour que l'expliquation se ferme et que la parte commence le joueur doit entrer : desamorcer.
+Pour que l'expliquation se ferme et que la partie commence le joueur doit appuyer sur entrée.
 
 Après cela le joueur peut voir la bombe, et le manuel.
 
@@ -37,27 +51,61 @@ L'écran du joueur est divisé en 3 parties :
 |        Liste des Commandes        |
 ```
 
-## Bombe
+### Bombe
 
 La bombe et ces module sont représenté par des caractères ASCII.
 
 Les intéractiosn avec la bombe et le manuel se font par des commandes.
 
-## Commandes
+### Commandes
 
-### Bombe
+#### Bombe
 
 - tourner [direction] : tourne la bombe dans la direction [direction] (haut, bas, gauche, droite)
 
 - module [id] : affiche le module [id] et les commandes associées
 
-### Manuel
+#### Manuel
 
 - page suivante : affiche la page suivante du manuel
 
 - page précédente : affiche la page précédente du manuel
 
 - page [id] : ouvre la page [id] du manuel
+
+## Tableau des Scores
+
+Le tableau des scores est un tableau qui affiche les meilleurs scores.
+
+Le tableau des scores est composé de 3 colonnes de 10 lignes :
+
+- Nom
+
+- Score
+
+- Date
+
+### Calcul du score
+
+Le score est calculé en fonction du nombre d'erreur commise, de la difficulter et du temps mis pour résoudre la bombe.
+
+Equation : `((Nombre de Module Fait * 1000) + (1000 * difficulté)) / (1 + (temps / temps max))`
+
+## Paramètres
+
+Le menu des paramètres permet de :
+
+- Changer la difficulté
+
+### Difficulté
+
+- Facile : `1`
+
+- Moyen : `2`
+
+- Difficile : `3`
+
+La difficulté est un nombre compris entre 1 et 3, plus la difficulté est élevé, plus la bombe est complexe et le score est élevé.
 
 # Types
 
