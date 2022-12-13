@@ -113,9 +113,7 @@ Plus la difficulté est élevé, plus la bombe est complexe et le score est éle
 
 # Informations Techniques
 
-## Liste des Modules
-
-1. ### Coupe Fils
+## Mocule : Coupe Fils
 
 #### Description et Objectif
 
@@ -136,7 +134,7 @@ si cbacb est vrai alor coupé le fil 5
 
 - couper fil [id] : coupe le fil n°[id]
 
-2. ### Module Terminal
+## Module : Terminal
 
 #### Description et Objectif
 
@@ -155,7 +153,7 @@ cat : permet de ...
 
 - [commands] : effectue une action selon [commands]
 
-3. ### Module Cryptographie
+## Module : Cryptographie
 
 #### Description et Objectif
 
