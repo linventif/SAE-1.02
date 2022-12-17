@@ -51,38 +51,24 @@ L'écran du joueur est divisé en 3 parties :
 |        Liste des Commandes        |
 ```
 
-### Bombe
+## Bombe
 
 La bombe et ces module sont représenté par des caractères ASCII.
 
 Les intéractiosn avec la bombe et le manuel se font par des commandes.
 
-<<<<<<< Updated upstream
-Le joueur peut déplacer la vue, afficher un module et intéragir avec lui.
-
-### Manuel
-
-Le manuel contient toutes les informations utulise au désamorsage de la bombe.
-
-Chaque module est expliquer et contient les façons de le résoudre.
-
-=======
->>>>>>> Stashed changes
 ### Commandes
 
 - tourner [direction] : tourne la bombe dans la direction [direction] (haut, bas, gauche, droite)
 
 - module [id] : affiche le module [id] et les commandes associées
 
-<<<<<<< Updated upstream
-=======
 ## Manuel
 
 Le manuel est réparti en plusieurs pages, chaque page contient des informations sur un module de la bombe.
 
 ### Commandes
 
->>>>>>> Stashed changes
 - page suivante : affiche la page suivante du manuel
 
 - page précédente : affiche la page précédente du manuel
