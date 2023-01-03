@@ -1,12 +1,12 @@
-<!-- a envoyer a tekwa.tedjini@univ-lille.fr -->
-
 # Informations Générales
 
-Nom du projet : Jeu du Désamorceur
+Nom du projet: Jeu du Désamorceur
 
-Auteur : [Linventif](https://github.com/linventif)
+Auteur: [Linventif](https://github.com/linventif)
 
-Date de création : 2022-12-12
+Date de création: 2022-12-12
+
+Version: beta
 
 # Description
 
@@ -15,9 +15,22 @@ Pour ce faire, il dispose d'un manuel d'utilisation de la bombe, qui lui donne d
 Certaines parties du manuel sont cependant manquantes, et le joueur devra
 Pas de gestion du temps prévue pour la version textuelle.
 
+# Lancer le jeu
+
+### Prérequis
+
+- Java JDK
+
+- Permission d'execution des fichiers .sh
+
+### Lancer le jeu
+
+1. Double cliquer sur le fichier `run.sh` dans le dossier du jeu
+2. Ouvrir un terminal et taper `./run.sh` dans le dossier du jeu
+
 # Traces d'exécution textuelle
 
-Au lance du jeu, une menu principale souvre et celui ci permet de :
+Au lance du jeu, une menu principale souvre et celui ci permet de:
 
 - Lancer une partie
 
@@ -42,7 +55,7 @@ Pour que l'expliquation se ferme et que la partie commence le joueur doit appuye
 
 Après cela le joueur peut voir la bombe, et le manuel.
 
-L'écran du joueur est divisé en 3 parties :
+L'écran du joueur est divisé en 3 parties:
 
 ```text
 |                 |                 |
@@ -59,9 +72,9 @@ Les intéractiosn avec la bombe et le manuel se font par des commandes.
 
 ### Commandes
 
-- tourner [direction] : tourne la bombe dans la direction [direction] (haut, bas, gauche, droite)
+- tourner [direction]: tourne la bombe dans la direction [direction] (haut, bas, gauche, droite)
 
-- module [id] : affiche le module [id] et les commandes associées
+- module [id]: affiche le module [id] et les commandes associées
 
 ## Manuel
 
@@ -69,17 +82,17 @@ Le manuel est réparti en plusieurs pages, chaque page contient des informations
 
 ### Commandes
 
-- page suivante : affiche la page suivante du manuel
+- page suivante: affiche la page suivante du manuel
 
-- page précédente : affiche la page précédente du manuel
+- page précédente: affiche la page précédente du manuel
 
-- page [id] : ouvre la page [id] du manuel
+- page [id]: ouvre la page [id] du manuel
 
 ## Tableau des Scores
 
 Le tableau des scores est un tableau qui affiche les meilleurs scores.
 
-Le tableau des scores est composé de 3 colonnes de 10 lignes :
+Le tableau des scores est composé de 3 colonnes de 10 lignes:
 
 - Nom
 
@@ -91,27 +104,27 @@ Le tableau des scores est composé de 3 colonnes de 10 lignes :
 
 Le score est calculé en fonction du nombre d'erreur commise, de la difficulter et du temps mis pour résoudre la bombe.
 
-Equation : `((Nombre de Module Fait * 1000) * difficulté) / (1 + (temps / 60))`
+Equation: `((Nombre de Module Fait * 1000) * difficulté) / (1 + (temps / 60))`
 
 ## Paramètres
 
-Le menu des paramètres permet de :
+Le menu des paramètres permet de:
 
 - Changer la difficulté
 
 ### Difficulté
 
-- Facile : Valeur 1 - Modules 3
+- Facile: Valeur 1 - Modules 3
 
-- Moyen : Valeur 2 - Modules 6
+- Moyen: Valeur 2 - Modules 6
 
-- Difficile : Valeur 1 - Modules 9
+- Difficile: Valeur 1 - Modules 9
 
 Plus la difficulté est élevé, plus la bombe est complexe et le score est élevé.
 
 # Informations Techniques
 
-## Mocule : Coupe Fils
+## Mocule: Coupe Fils
 
 #### Description et Objectif
 
@@ -130,9 +143,9 @@ si cbacb est vrai alor coupé le fil 5
 
 #### Commandes
 
-- couper fil [id] : coupe le fil n°[id]
+- couper fil [id]: coupe le fil n°[id]
 
-## Module : Terminal
+## Module: Terminal
 
 #### Description et Objectif
 
@@ -141,17 +154,17 @@ L'objectif de ce module est d'utuliser des commande bash simple affain de suppri
 #### Page du Manuel
 
 ```txt
-cd : permet de ...
-rm : permet de ...
-pwd : permet de ...
-cat : permet de ...
+cd: permet de ...
+rm: permet de ...
+pwd: permet de ...
+cat: permet de ...
 ```
 
 #### Commandes
 
-- [commands] : effectue une action selon [commands]
+- [commands]: effectue une action selon [commands]
 
-## Module : Cryptographie
+## Module: Cryptographie
 
 #### Description et Objectif
 
@@ -166,29 +179,29 @@ binaire
 
 #### Commandes
 
-- [commands] : effectue une action selon [commands]
+- [commands]: effectue une action selon [commands]
 
 ## Types
 
 ### Manuel
 
-- Page du manuel : `Page`
+- Page du manuel: `Page`
 
 ### Bombe
 
-- Bombe : `Bombe`
+- Bombe: `Bombe`
 
-- Face : `Face`
+- Face: `Face`
 
-- Module : `Module`
+- Module: `Module`
 
 ### Autre
 
-- Score : `Score`
+- Score: `Score`
 
 
 # Exemple
 
-## Module : Coupé le bon Fil
+## Module: Coupé le bon Fil
 
-## Module : Terminal (supprimer fichier)
+## Module: Terminal (supprimer fichier)

@@ -1,3 +1,4 @@
+import extensions.*;
 class defuse extends Program{
     String introduction(){
         println();
@@ -71,7 +72,6 @@ class defuse extends Program{
 
         if (fileExist(getAllFilesFromCurrentDirectory(), "scoresboard.csv")){
             //scoresboard = loadCSV("scoresboard.csv");
-            print("Le fichier existe déjà !");
         } else {
             saveCSV(scoresboard, "scoresboard.csv");
         }
@@ -94,26 +94,54 @@ class defuse extends Program{
         readString();
     }
 
-    void algorithm(){
-        boolean fini = false;
-        while (!fini) {
-            int action = menu();
-            if (action == 1){
-                println("Vous avez choisi de lancer le jeu !");
-            }
-            else if (action == 2){
-                scoresboard();
-            }
-            else if (action == 3){
-                println("Vous avez choisi d'afficher les paramètres !");
-            }
-            else if (action == 4){
-                fini = true;
-            }
-            else{
-                println("Vous n'avez pas choisi une action valide !");
+    // Fonction permettant de créer un tableau de String en 2D à partir d'un fichier csv
+    String[][] csvToTable(String csvPath){
+        CSVFile csv = loadCSV(csvPath);
+        String[][] table = new String[rowCount(csv)][columnCount(csv)];
+        for (int i = 0; i < rowCount(csv); i++){
+            for (int j = 0; j < columnCount(csv); j++){
+                table[i][j] = getCell(csv, i, j);
             }
         }
+        return table;
+    }
+
+    // Fonction permettant d'afficher un tableau de String en 2D
+    void printTable(String[][] table){
+        println();
+        for (int i = 0; i < length(table, 1); i++){
+            print(" ");
+            for (int j = 0; j < length(table, 2); j++){
+                print(table[i][j]);
+                print(" ");
+            }
+            println();
+            println();
+        }
+    }
+
+    void algorithm(){
+        // boolean fini = false;
+        // while (!fini) {
+        //     int action = menu();
+        //     if (action == 1){
+        //         println("Vous avez choisi de lancer le jeu !");
+        //     }
+        //     else if (action == 2){
+        //         scoresboard();
+        //     }
+        //     else if (action == 3){
+        //         println("Vous avez choisi d'afficher les paramètres !");
+        //     }
+        //     else if (action == 4){
+        //         fini = true;
+        //     }
+        //     else{
+        //         println("Vous n'avez pas choisi une action valide !");
+        //     }
+        // }
         //String pseudo = introduction();
+        println("ALL IS GOOD");
+        //printTable(csvToTable("test.csv"));
     }
 }
