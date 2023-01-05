@@ -19,7 +19,7 @@ Pas de gestion du temps prévue pour la version textuelle.
 
 ### Prérequis
 
-- Java JDK
+- Java JDK Default
 
 - Permission d'execution des fichiers .sh
 
