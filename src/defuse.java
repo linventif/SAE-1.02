@@ -663,7 +663,7 @@ class defuse extends Program{
         } else if (debug == 2){
             Game game = new Game();
             game.player.name = "Test";
-            deathScreen(game);
+            defuseScreen(game);
         } else {
             boolean fini = false;
             while (!fini) {
