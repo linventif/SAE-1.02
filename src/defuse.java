@@ -24,6 +24,66 @@ import extensions.*;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
+class StopWatch{
+    long startTime;
+    long stopTime;
+    boolean running = false;
+
+    // Fonction permettant de démarrer le chronomètre
+    public void start(){
+        this.startTime = System.currentTimeMillis();
+        this.running = true;
+    }
+
+    // Fonction permettant d'arrêter le chronomètre
+    public void stop(){
+        this.stopTime = System.currentTimeMillis();
+        this.running = false;
+    }
+
+    // Fonction permettant de récupérer le temps en millisecondes
+    public long getTime(){
+        long elapsed;
+        if(running){
+            elapsed = (System.currentTimeMillis() - startTime);
+        }
+        else{
+            elapsed = (stopTime - startTime);
+        }
+        return elapsed;
+    }
+
+    // Fonction permettant de récupérer le temps en secondes
+    public long getTimeSecs(){
+        long elapsed;
+        if(running){
+            elapsed = ((System.currentTimeMillis() - startTime) / 1000);
+        }
+        else{
+            elapsed = ((stopTime - startTime) / 1000);
+        }
+        return elapsed;
+    }
+}
+
+class Bombe{
+    boolean defused = false;
+    int nbModules = 3;
+    int nbModulesDefused = 0;
+}
+
+class Player{
+    String name = "Joueur Sans Nom";
+    int errors = 0;
+    StopWatch time = new StopWatch();
+    int score = 0;
+}
+
+class Game{
+    Player player = new Player();
+    Bombe bombe = new Bombe();
+}
+
 class defuse extends Program{
     // -- // -- // -- // -- // -- // -- // -- //
     //                                        //
@@ -38,6 +98,11 @@ class defuse extends Program{
             println("["+(i+1)+"]: "+table[i]);
             println();
         }
+    }
+
+    // Fonction permettant de calculer le score d'un joueur
+    int calculateScore(Player player){
+        return (100 - player.errors) * (int)player.time.getTimeSecs();
     }
 
     // Fonction permettant d'afficher un tableau de String en 2D
@@ -173,7 +238,7 @@ class defuse extends Program{
     // -- // -- // -- // -- // -- // -- // -- //
 
     // Fonction permettant de vérifier reinitialiser les scores
-    void resetScores(){
+    void resetScoresBoard(){
         String[][] scoresboard = new String[11][3];
         scoresboard[0][0] = "Pseudo";
         scoresboard[0][1] = "Score";
@@ -186,6 +251,9 @@ class defuse extends Program{
         String[][] scoresboard = csvToTable("../ressources/scoresboard.csv");
         int index = 1;
         boolean stop = false;
+        if (score < 0){
+            score = 0;
+        }
         while (index <= 10 && !stop){
             println("SPECIFIC : " + scoresboard[index][1]);
             int last_score = stringToNumber(scoresboard[index][1]);
@@ -220,23 +288,33 @@ class defuse extends Program{
     //     }
     // }
 
+    // Fonction permettant de mettre une chaine de caractère en minuscule
+    String sringLower(String str){
+        String result = "";
+        for (int i = 0; i < length(str); i++){
+            char c = charAt(str, i);
+            if (c >= 'A' && c <= 'Z'){
+                c += 32;
+            }
+            result += c;
+        }
+        return result;
+    }
+
     // Fonction permettant d'obtenir et de vérifier la réponse d'un utilisateur
     int getAnswer(String[] answers){
         boolean debug = false;
-        String answer = readString();
+        String answer = sringLower(readString());
         while (!containsString(answers, answer) && !debug){
             println();
             println("Veuillez entrer une réponse valide ! ");
             print("Réponse Possible: ");
             printAnswers(answers);
             print(" > ");
-            answer = readString();
+            answer = sringLower(readString());
             if (equals(answer, "debug")){
                 debug = true;
             }
-        }
-        if (debug){
-
         }
         return indexOfString(answers, answer) + 1;
     }
@@ -318,13 +396,6 @@ class defuse extends Program{
         println("\u001B[32m" + "Test Function : " + centerString("File Exist", 30) + " : Passed" + "\u001B[0m");
     }
 
-    // void testGetLineCount(){
-    //     assertEquals(1, getLineCount("../ressources/test.txt"));
-    //     assertEquals(3, getLineCount("../ressources/test.csv"));
-    //     assertEquals(12, getLineCount("../ressources/scoresboard.csv"));
-    //     println("\u001B[32m" + "Test Function : Get Line Count : Passed" + "\u001B[0m");
-    // }
-
     // Fonction permettant de tester la fonction de getFileContent
     void testGetFileContent(){
         assertEquals("JE SUIS UN FICHIER DE TEST\n", getFileContent("../ressources/test.txt"));
@@ -354,8 +425,6 @@ class defuse extends Program{
         println("\u001B[32m" + "Test Function : " + centerString("String To Number", 30) + " : Passed" + "\u001B[0m");
     }
 
-    // Fonction permettant de tester la fonciton file
-
     // -- // -- // -- // -- // -- // -- // -- //
     //                                        //
     //           Fonctions d'affichage        //
@@ -370,7 +439,7 @@ class defuse extends Program{
     // Function permettant d'afficher le logo du jeu
     void boomLogo(){
         println();
-        println(getFileContent("../ressources/boum.txt"));
+        println(getFileContent("../ressources/bomb.txt"));
     }
 
     // Fonction permettant d'afficher le menu d'introduction
@@ -387,7 +456,7 @@ class defuse extends Program{
         println("Bonne chance !");
         println();
         println();
-        print("Pour commencer entrez votre pseudo: ");
+        print("Pour commencer entrez votre nom d'agent: ");
         return readString();
     }
 
@@ -399,7 +468,7 @@ class defuse extends Program{
         println();
         println("1 - Lancez le Jeu");
         println("2 - Tableau des Scores");
-        println("3 - Parametres");
+        println("3 - Parametres & Debugage");
         println("4 - Quitter");
         println();
         println();
@@ -407,7 +476,7 @@ class defuse extends Program{
         return getAnswer(new String[]{"1", "2", "3", "4"});
     }
 
-    int parameter(){
+    int parameterMenu(){
         System.out.print("\033[H\033[2J");
         boomLogo();
         println();
@@ -450,23 +519,6 @@ class defuse extends Program{
         pressEnterToContinue("principal");
     }
 
-    // Fonction permettant d'afficher le menu de fin de partie
-    void fin(boolean win){
-        System.out.print("\033[H\033[2J");
-        boomLogo();
-        println();
-        println();
-        if (win){
-            println("Vous avez gagné !");
-        } else {
-            println("Vous avez perdu !");
-        }
-        println();
-        println();
-        pressEnterToContinue("tableau des scores");
-        scoresboard();
-    }
-
     void debugageTest(){
         System.out.print("\033[H\033[2J");
         println();
@@ -484,18 +536,54 @@ class defuse extends Program{
         pressEnterToContinue("des parametres");
     }
 
+    void deathScreen(Game game){
+        System.out.print("\033[H\033[2J");
+        println();
+        println();
+        println(getFileContent("../ressources/death.txt"));
+        println();
+        println();
+        println("La bombe a explosé, vous avez perdu !");
+        println();
+        println("Statistiques:");
+        println("Erreur: " + game.player.errors);
+        println("Temps: " + game.player.time.getTimeSecs() + " secondes");
+        println("Score: " + game.player.score);
+        println();
+        println();
+        pressEnterToContinue("principal");
+    }
+
+    void defuseScreen(Game game){
+        System.out.print("\033[H\033[2J");
+        println();
+        println();
+        println(getFileContent("../ressources/defuse.txt"));
+        println();
+        println();
+        println("La bombe a été désamorcée, vous avez gagné !");
+        println();
+        println("Statistiques:");
+        println("Erreur: " + game.player.errors);
+        println("Temps: " + game.player.time.getTimeSecs() + " secondes");
+        println("Score: " + game.player.score);
+        println();
+        println();
+        pressEnterToContinue("principal");
+    }
+
     // -- // -- // -- // -- // -- // -- // -- //
     //                                        //
     //            Fonctions Menu              //
     //                                        //
     // -- // -- // -- // -- // -- // -- // -- //
 
-    void menuParameter(){
+    void parameter(){
         boolean quit = false;
         while (!quit){
-            int id = parameter();
+            int id = parameterMenu();
             if (id == 1){
-                resetScores();
+                resetScoresBoard();
             }
             else if (id == 2){
                 println("Vous avez choisi de réinitialiser les parametres !");
@@ -517,6 +605,44 @@ class defuse extends Program{
         }
     }
 
+    void end(Player player, Bombe bombe){
+        System.out.print("\033[H\033[2J");
+        boomLogo();
+        println();
+        println();
+        if (bombe.defused){
+            println("Vous avez gagné !");
+        } else {
+            println("Vous avez perdu !");
+        }
+        println();
+        println();
+        addScore(player.name, player.score + ((int) player.time.getTimeSecs() * -2));
+        pressEnterToContinue("tableau des scores");
+        scoresboard();
+    }
+
+    void play(){
+        Game game = new Game();
+        game.player.name = introduction();
+        game.player.time.start();
+        System.out.print("\033[H\033[2J");
+        while (game.player.errors == 3 || game.bombe.defused){
+            String answer = readString();
+            if (equals(answer, "defuse")){
+                game.bombe.defused = true;
+            } else {
+                game.player.errors++;
+            }
+        }
+        game.player.time.stop();
+        if (game.bombe.defused){
+            defuseScreen(game);
+        } else {
+            deathScreen(game);
+        }
+    }
+
     // -- // -- // -- // -- // -- // -- // -- //
     //                                        //
     //           Corps du Programme           //
@@ -524,21 +650,36 @@ class defuse extends Program{
     // -- // -- // -- // -- // -- // -- // -- //
 
     // Corps du programme
+    int debug = 2;
     void algorithm(){
-        boolean fini = false;
-        while (!fini) {
-            int id = menu();
-            if (id == 1){
-                println("Vous avez choisi de lancer le jeu !");
+        if (debug == 1){
+            println("Lancer un chrono");
+            StopWatch chrono = new StopWatch();
+            chrono.start();
+            println("Chrono lancé");
+            while (true){
+                println("Temps écoulé : " + chrono.getTimeSecs());
             }
-            else if (id == 2){
-                scoresboard();
-            }
-            else if (id == 3){
-                menuParameter();
-            }
-            else if (id == 4){
-                fini = true;
+        } else if (debug == 2){
+            Game game = new Game();
+            game.player.name = "Test";
+            deathScreen(game);
+        } else {
+            boolean fini = false;
+            while (!fini) {
+                int id = menu();
+                if (id == 1){
+                    play();
+                }
+                else if (id == 2){
+                    scoresboard();
+                }
+                else if (id == 3){
+                    parameter();
+                }
+                else if (id == 4){
+                    fini = true;
+                }
             }
         }
     }

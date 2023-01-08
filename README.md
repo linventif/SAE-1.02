@@ -1,6 +1,6 @@
 # Informations Générales
 
-Nom du projet: Jeu du Désamorceur
+Nom du projet: Desamorceur
 
 Auteur: [Linventif](https://github.com/linventif)
 
@@ -10,10 +10,7 @@ Version: beta
 
 # Description
 
-Le jeu du Désamorceur consite a désamorcer une bombe en résolvant plusieur problèmes, ils peuvent t'être d'ordre logique, mathématique, linguistique, etc.
-Pour ce faire, il dispose d'un manuel d'utilisation de la bombe, qui lui donne des etapes et les règles de résolution de chaque module de la bombe.
-Certaines parties du manuel sont cependant manquantes, et le joueur devra
-Pas de gestion du temps prévue pour la version textuelle.
+Le jeu du Désamorceur consite a désamorcer une bombe en résolvant plusieur problèmes, ils peuvent t'être d'ordre logique, mathématique, linguistique, etc. Pour ce faire, il dispose d'un manuel d'utilisation de la bombe, qui lui donne des etapes et les règles de résolution de chaque module de la bombe. Le joueur a un nombre limité d'erreur avant que la bombe explose. Le but du jeu est de résoudre la bombe en un minimum de temps et d'erreur. Les meilleurs scores sont disponibles dans le tableau des scores.
 
 # Lancer le jeu
 
@@ -42,7 +39,7 @@ Au lance du jeu, une menu principale souvre et celui ci permet de:
 
 ## Lancer une partie
 
-Au lancement d'une partie, après cela il a un résumé bref de sa mission lui expliquant le context et ce qu'il doit faire.
+Au lancement d'une partie, le joueur a un résumé bref de sa mission lui expliquant le context et ce qu'il doit faire.
 
 ```text
 Bonjour Désamorceur, vous avez été choisi pour désamorcer une bombe.
