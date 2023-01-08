@@ -66,10 +66,17 @@ class StopWatch{
     }
 }
 
+class Module{
+    String name = "Module Sans Nom";
+    String[] answers = {"A", "B", "C", "D"};
+    String[] correctAnswers = {"A", "B", "C", "D"};
+    boolean resolved = false;
+}
+
 class Bombe{
     boolean defused = false;
     int nbModules = 3;
-    int nbModulesDefused = 0;
+    int nbModulesResolve = 0;
 }
 
 class Player{
@@ -128,6 +135,16 @@ class defuse extends Program{
     boolean containsString(String[] table, String value){
         for (int i = 0; i < length(table, 1); i++){
             if (equals(table[i], value)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Fonction permettant de verifier si une chaine de caractère est un caractère
+    boolean containsString(String str, char c){
+        for (int i = 0; i < length(str); i++){
+            if (str.charAt(i) == c){
                 return true;
             }
         }
@@ -319,6 +336,16 @@ class defuse extends Program{
         return indexOfString(answers, answer) + 1;
     }
 
+    // Fonction permettant de verifier si un pseudo est valide
+    String validPseudo(String pseudo){
+        while (length(pseudo) < 3 || length(pseudo) > 20 || containsString(pseudo, ' ')){
+            println("Votre pseudo doit contenir entre 3 et 20 caractères et ne doit pas contenir d'espace !");
+            print(" > ");
+            pseudo = readString();
+        }
+        return pseudo;
+    }
+
     // -- // -- // -- // -- // -- // -- // -- //
     //                                        //
     //            Fonctions de Test           //
@@ -436,34 +463,32 @@ class defuse extends Program{
         readString();
     }
 
-    // Function permettant d'afficher le logo du jeu
-    void boomLogo(){
-        println();
-        println(getFileContent("../ressources/bomb.txt"));
-    }
-
     // Fonction permettant d'afficher le menu d'introduction
     String introduction(){
         System.out.print("\033[H\033[2J");
+        println(getFileContent("../ressources/logo.txt"));
         println();
         println();
         println("Bienvenue dans le jeu Defuse !");
         println();
-        println("Vous devez defuser une bombe avant qu'elle n'explose !");
-        println("Voici votre manuel d'utilisation de la bombe, il vous expliquera comment la désamorcer.");
+        println("Votre mission est de désamorcer une bombe avant qu'elle n'explose.");
+        println("Pour cela vous devrez résoudre chaque module de la bombe.");
+        println("Chaque module est différent, vous devrez donc trouver la bonne méthode pour le désamorcer.");
+        println("Pour votre mission vous aurez un manuel d'utilisation de la bombe.");
+        println("Il vous sera utile pour résoudre les modules sans faire d'erreur.");
         println("Cependant la bombe est instable, si vous faite 3 erreurs, la bombe explosera.");
         println();
         println("Bonne chance !");
         println();
         println();
         print("Pour commencer entrez votre nom d'agent: ");
-        return readString();
+        return validPseudo(readString());
     }
 
     // Fonction permettant d'afficher le menu principal
-    int menu(){
+    int mainMenu(){
         System.out.print("\033[H\033[2J");
-        boomLogo();
+        println(getFileContent("../ressources/logo.txt"));
         println();
         println();
         println("1 - Lancez le Jeu");
@@ -476,9 +501,10 @@ class defuse extends Program{
         return getAnswer(new String[]{"1", "2", "3", "4"});
     }
 
+    // Fonction permettant d'afficher le menu des parametres
     int parameterMenu(){
         System.out.print("\033[H\033[2J");
-        boomLogo();
+        println(getFileContent("../ressources/logo.txt"));
         println();
         println();
         println("1 - Réinitialiser les Scores");
@@ -500,7 +526,6 @@ class defuse extends Program{
         println("Voici le tableau des scores:");
         println();
         println();
-
         String[][] scoresboard = csvToTable("../ressources/scoresboard.csv");
         for (int i = 0; i < length(scoresboard, 1); i++){
             for (int j = 0; j < length(scoresboard, 2); j++){
@@ -513,7 +538,6 @@ class defuse extends Program{
             println();
             println();
         }
-
         println();
         println();
         pressEnterToContinue("principal");
@@ -536,28 +560,26 @@ class defuse extends Program{
         pressEnterToContinue("des parametres");
     }
 
+    // Fonction permettant d'afficher le menu de fin de partie (mort)
     void deathScreen(Game game){
         System.out.print("\033[H\033[2J");
-        println();
-        println();
         println(getFileContent("../ressources/death.txt"));
         println();
         println();
         println("La bombe a explosé, vous avez perdu !");
         println();
         println("Statistiques:");
-        println("Erreur: " + game.player.errors);
+        println("Modue Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
         println("Temps: " + game.player.time.getTimeSecs() + " secondes");
         println("Score: " + game.player.score);
         println();
         println();
-        pressEnterToContinue("principal");
+        pressEnterToContinue("tableau des scores");
     }
 
+    // Fonction permettant d'afficher le menu de fin de partie (victoire)
     void defuseScreen(Game game){
         System.out.print("\033[H\033[2J");
-        println();
-        println();
         println(getFileContent("../ressources/defuse.txt"));
         println();
         println();
@@ -605,29 +627,19 @@ class defuse extends Program{
         }
     }
 
-    void end(Player player, Bombe bombe){
-        System.out.print("\033[H\033[2J");
-        boomLogo();
-        println();
-        println();
-        if (bombe.defused){
-            println("Vous avez gagné !");
-        } else {
-            println("Vous avez perdu !");
-        }
-        println();
-        println();
-        addScore(player.name, player.score + ((int) player.time.getTimeSecs() * -2));
-        pressEnterToContinue("tableau des scores");
-        scoresboard();
-    }
+    // -- // -- // -- // -- // -- // -- // -- //
+    //                                        //
+    //           Corps du Programme           //
+    //                                        //
+    // -- // -- // -- // -- // -- // -- // -- //
 
+    // Fonction permettant de lancer le jeu
     void play(){
         Game game = new Game();
         game.player.name = introduction();
         game.player.time.start();
         System.out.print("\033[H\033[2J");
-        while (game.player.errors == 3 || game.bombe.defused){
+        while (game.player.errors < 3 || game.bombe.defused){
             String answer = readString();
             if (equals(answer, "defuse")){
                 game.bombe.defused = true;
@@ -635,59 +647,33 @@ class defuse extends Program{
                 game.player.errors++;
             }
         }
+        //addScore(game.player.name, game.player.score + ((int) game.player.time.getTimeSecs() * -2));
         game.player.time.stop();
         if (game.bombe.defused){
             defuseScreen(game);
         } else {
             deathScreen(game);
         }
+        scoresboard();
     }
 
-    // -- // -- // -- // -- // -- // -- // -- //
-    //                                        //
-    //           Corps du Programme           //
-    //                                        //
-    // -- // -- // -- // -- // -- // -- // -- //
-
     // Corps du programme
-    int debug = 2;
     void algorithm(){
-        if (debug == 1){
-            println("Lancer un chrono");
-            StopWatch chrono = new StopWatch();
-            chrono.start();
-            println("Chrono lancé");
-            while (true){
-                println("Temps écoulé : " + chrono.getTimeSecs());
+        boolean fini = false;
+        while (!fini) {
+            int id = mainMenu();
+            if (id == 1){
+                play();
             }
-        } else if (debug == 2){
-            Game game = new Game();
-            game.player.name = "Test";
-            defuseScreen(game);
-        } else {
-            boolean fini = false;
-            while (!fini) {
-                int id = menu();
-                if (id == 1){
-                    play();
-                }
-                else if (id == 2){
-                    scoresboard();
-                }
-                else if (id == 3){
-                    parameter();
-                }
-                else if (id == 4){
-                    fini = true;
-                }
+            else if (id == 2){
+                scoresboard();
+            }
+            else if (id == 3){
+                parameter();
+            }
+            else if (id == 4){
+                fini = true;
             }
         }
     }
 }
-
-/* Notes:
-
-printTable(csvToTable("../ressources/test.csv"));
-
-        testContainsString();
-*/
