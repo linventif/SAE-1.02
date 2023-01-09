@@ -71,12 +71,14 @@ class Module{
     String[] answers = {"A", "B", "C", "D"};
     String[] correctAnswers = {"A", "B", "C", "D"};
     boolean resolved = false;
+    String manuel = "Aucun Manuel";
 }
 
 class Bombe{
     boolean defused = false;
     int nbModules = 3;
     int nbModulesResolve = 0;
+    Module[] modules = new Module[nbModules];
 }
 
 class Player{
@@ -89,6 +91,7 @@ class Player{
 class Game{
     Player player = new Player();
     Bombe bombe = new Bombe();
+    int page = 0;
 }
 
 class defuse extends Program{
@@ -125,6 +128,15 @@ class defuse extends Program{
         }
     }
 
+    String stringToMorceCode(String str){
+        String morceCode = "";
+        for (int i = 0; i < length(str); i++){
+            morceCode += str.charAt(i);
+            morceCode += " ";
+        }
+        return morceCode;
+    }
+
     // -- // -- // -- // -- // -- // -- // -- //
     //                                        //
     //            Fonctions Primaires         //
@@ -142,13 +154,13 @@ class defuse extends Program{
     }
 
     // Fonction permettant de verifier si une chaine de caractère est un caractère
-    boolean containsString(String str, char c){
+    boolean containsOnlyChar(String str, char strart_c, char end_c){
         for (int i = 0; i < length(str); i++){
-            if (str.charAt(i) == c){
-                return true;
+            if (str.charAt(i) < strart_c || str.charAt(i) > end_c){
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     // Fonction permettant de créer un tableau de String en 2D à partir d'un fichier csv
@@ -254,18 +266,28 @@ class defuse extends Program{
     //                                        //
     // -- // -- // -- // -- // -- // -- // -- //
 
-    // Fonction permettant de vérifier reinitialiser les scores
+    // Fonction permettant de reinitialiser les scores
     void resetScoresBoard(){
         String[][] scoresboard = new String[11][3];
         scoresboard[0][0] = "Pseudo";
         scoresboard[0][1] = "Score";
         scoresboard[0][2] = "Date";
-        saveCSV(scoresboard, "../ressources/scoresboard.csv");
+        saveCSV(scoresboard, "../ressources/csv/scoresboard.csv");
+    }
+
+    // Fonction permettant de reinitialiser les paramettre
+    void resetSettings(){
+        String[][] settings = new String[2][2];
+        settings[0][0] = "TEST";
+        settings[0][1] = "1";
+        settings[1][0] = "TEST2";
+        settings[1][1] = "1";
+        saveCSV(settings, "../ressources/csv/settings.csv");
     }
 
     // Fonction permettant de sauvegarder un score dans le tableau des scores
     void addScore(String pseudo, int score){
-        String[][] scoresboard = csvToTable("../ressources/scoresboard.csv");
+        String[][] scoresboard = csvToTable("../ressources/csv/scoresboard.csv");
         int index = 1;
         boolean stop = false;
         if (score < 0){
@@ -292,7 +314,7 @@ class defuse extends Program{
             scoresboard[index][0] = pseudo;
             scoresboard[index][1] = ""+score;
             scoresboard[index][2] = ""+DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDateTime.now());
-            saveCSV(scoresboard, "../ressources/scoresboard.csv");
+            saveCSV(scoresboard, "../ressources/csv/scoresboard.csv");
         }
         readString();
     }
@@ -306,7 +328,7 @@ class defuse extends Program{
     // }
 
     // Fonction permettant de mettre une chaine de caractère en minuscule
-    String sringLower(String str){
+    String stringLower(String str){
         String result = "";
         for (int i = 0; i < length(str); i++){
             char c = charAt(str, i);
@@ -318,17 +340,30 @@ class defuse extends Program{
         return result;
     }
 
+    // Fonction permettant de mettre la première lettre d'une chaine de caractère en majuscule
+    String firstLetterUpper(String str){
+        String result = "";
+        for (int i = 0; i < length(str); i++){
+            char c = charAt(str, i);
+            if (i == 0 && c >= 'a' && c <= 'z'){
+                c -= 32;
+            }
+            result += c;
+        }
+        return result;
+    }
+
     // Fonction permettant d'obtenir et de vérifier la réponse d'un utilisateur
     int getAnswer(String[] answers){
         boolean debug = false;
-        String answer = sringLower(readString());
+        String answer = stringLower(readString());
         while (!containsString(answers, answer) && !debug){
             println();
             println("Veuillez entrer une réponse valide ! ");
             print("Réponse Possible: ");
             printAnswers(answers);
             print(" > ");
-            answer = sringLower(readString());
+            answer = stringLower(readString());
             if (equals(answer, "debug")){
                 debug = true;
             }
@@ -338,11 +373,12 @@ class defuse extends Program{
 
     // Fonction permettant de verifier si un pseudo est valide
     String validPseudo(String pseudo){
-        while (length(pseudo) < 3 || length(pseudo) > 20 || containsString(pseudo, ' ')){
-            println("Votre pseudo doit contenir entre 3 et 20 caractères et ne doit pas contenir d'espace !");
+        while (length(pseudo) < 3 || length(pseudo) > 20 || !containsOnlyChar(pseudo, 'a', 'z')){
+            println("Votre pseudo doit contenir entre 3 et 20 caractères et ne doit pas contenir que des lettres minuscules !");
             print(" > ");
             pseudo = readString();
         }
+        pseudo = firstLetterUpper(pseudo);
         return pseudo;
     }
 
@@ -414,24 +450,24 @@ class defuse extends Program{
 
     // Fonction permettant de tester la fonction de fileExist
     void testFileExist(){
-        assertEquals(true, fileExist("../ressources", "test.txt"));
-        assertEquals(true, fileExist("../ressources", "test.csv"));
-        assertEquals(true, fileExist("../ressources", "scoresboard.csv"));
-        assertEquals(false, fileExist("../ressources", "test.txtt"));
-        assertEquals(false, fileExist("../ressources", "test.cvs"));
-        assertEquals(false, fileExist("../ressources", "scoresboard.cvs"));
+        assertEquals(true, fileExist("../ressources/ascii", "test.txt"));
+        assertEquals(true, fileExist("../ressources/csv", "test.csv"));
+        assertEquals(true, fileExist("../ressources/csv", "scoresboard.csv"));
+        assertEquals(false, fileExist("../ressources/ascii", "test.txtt"));
+        assertEquals(false, fileExist("../ressources/csv", "test.cvs"));
+        assertEquals(false, fileExist("../ressources/csv", "scoresboard.cvs"));
         println("\u001B[32m" + "Test Function : " + centerString("File Exist", 30) + " : Passed" + "\u001B[0m");
     }
 
     // Fonction permettant de tester la fonction de getFileContent
     void testGetFileContent(){
-        assertEquals("JE SUIS UN FICHIER DE TEST\n", getFileContent("../ressources/test.txt"));
+        assertEquals("JE SUIS UN FICHIER DE TEST\n", getFileContent("../ressources/ascii/test.txt"));
         println("\u001B[32m" + "Test Function : " + centerString("Get File Content", 30) + " : Passed" + "\u001B[0m");
     }
 
     // Fonction permettant de tester la fonction de csvToTable
     void testCsvToTable(){
-        String[][] table = csvToTable("../ressources/test.csv");
+        String[][] table = csvToTable("../ressources/csv/test.csv");
         assertEquals("a", table[0][0]);
         assertEquals("b", table[0][1]);
         assertEquals("c", table[0][2]);
@@ -466,7 +502,7 @@ class defuse extends Program{
     // Fonction permettant d'afficher le menu d'introduction
     String introduction(){
         System.out.print("\033[H\033[2J");
-        println(getFileContent("../ressources/logo.txt"));
+        println(getFileContent("../ressources/ascii/logo.txt"));
         println();
         println();
         println("Bienvenue dans le jeu Defuse !");
@@ -488,7 +524,7 @@ class defuse extends Program{
     // Fonction permettant d'afficher le menu principal
     int mainMenu(){
         System.out.print("\033[H\033[2J");
-        println(getFileContent("../ressources/logo.txt"));
+        println(getFileContent("../ressources/ascii/logo.txt"));
         println();
         println();
         println("1 - Lancez le Jeu");
@@ -504,7 +540,7 @@ class defuse extends Program{
     // Fonction permettant d'afficher le menu des parametres
     int parameterMenu(){
         System.out.print("\033[H\033[2J");
-        println(getFileContent("../ressources/logo.txt"));
+        println(getFileContent("../ressources/ascii/logo.txt"));
         println();
         println();
         println("1 - Réinitialiser les Scores");
@@ -526,7 +562,7 @@ class defuse extends Program{
         println("Voici le tableau des scores:");
         println();
         println();
-        String[][] scoresboard = csvToTable("../ressources/scoresboard.csv");
+        String[][] scoresboard = csvToTable("../ressources/csv/scoresboard.csv");
         for (int i = 0; i < length(scoresboard, 1); i++){
             for (int j = 0; j < length(scoresboard, 2); j++){
                 String content = scoresboard[i][j];
@@ -563,7 +599,7 @@ class defuse extends Program{
     // Fonction permettant d'afficher le menu de fin de partie (mort)
     void deathScreen(Game game){
         System.out.print("\033[H\033[2J");
-        println(getFileContent("../ressources/death.txt"));
+        println(getFileContent("../ressources/ascii/death.txt"));
         println();
         println();
         println("La bombe a explosé, vous avez perdu !");
@@ -580,7 +616,7 @@ class defuse extends Program{
     // Fonction permettant d'afficher le menu de fin de partie (victoire)
     void defuseScreen(Game game){
         System.out.print("\033[H\033[2J");
-        println(getFileContent("../ressources/defuse.txt"));
+        println(getFileContent("../ressources/ascii/defuse.txt"));
         println();
         println();
         println("La bombe a été désamorcée, vous avez gagné !");
@@ -592,6 +628,17 @@ class defuse extends Program{
         println();
         println();
         pressEnterToContinue("principal");
+    }
+
+    void wait(String msg, int time){
+        System.out.print("\033[H\033[2J");
+        println();
+        print(msg);
+        StopWatch timer = new StopWatch();
+        timer.start();
+        while (timer.getTimeSecs() < time){
+            // Rien
+        }
     }
 
     // -- // -- // -- // -- // -- // -- // -- //
@@ -606,16 +653,18 @@ class defuse extends Program{
             int id = parameterMenu();
             if (id == 1){
                 resetScoresBoard();
+                wait("Réinitialisation des Scores: OK", 2);
             }
             else if (id == 2){
-                println("Vous avez choisi de réinitialiser les parametres !");
+                resetSettings();
+                wait("Réinitialisation des Parametres: OK", 2);
             }
             else if (id == 3){
                 debugageTest();
             }
             else if (id == 4){
                 println("Nom du joueur : ");
-                String name = readString();
+                String name = validPseudo(readString());
                 println("Score : ");
                 int score = readInt();
                 addScore(name, score);
@@ -633,6 +682,42 @@ class defuse extends Program{
     //                                        //
     // -- // -- // -- // -- // -- // -- // -- //
 
+    void playInterface(Game game){
+        System.out.print("\033[H\033[2J");
+        println();
+        println();
+        println("Status de la Bombe:");
+        println("Erreur: " + game.player.errors + " / 3");
+        println("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
+        println();
+        println();
+        println("Manuel:");
+        println(getFileContent("../ressources/manual/" + game.page + ".txt"));
+        println();
+        println();
+        println("Que voulez-vous faire ?");
+        println("1. Manuel - Page Suivante");
+        println("2. Manuel - Page Précédente");
+        println("3. Bombe - Désamorcer Module");
+        println();
+        println();
+        print("Votre choix: ");
+        int choice = getAnswer(new String[]{"1", "2", "3"});
+        if (choice == 1){
+            game.page++;
+        } else if (choice == 2){
+            game.page--;
+        } else if (choice == 3){
+            game.bombe.defused = true;
+        }
+            // String answer = readString();
+            // if (equals(answer, "defuse")){
+            //     game.bombe.defused = true;
+            // } else {
+            //     game.player.errors++;
+            // }
+    }
+
     // Fonction permettant de lancer le jeu
     void play(){
         Game game = new Game();
@@ -640,12 +725,7 @@ class defuse extends Program{
         game.player.time.start();
         System.out.print("\033[H\033[2J");
         while (game.player.errors < 3 || game.bombe.defused){
-            String answer = readString();
-            if (equals(answer, "defuse")){
-                game.bombe.defused = true;
-            } else {
-                game.player.errors++;
-            }
+            playInterface(game);
         }
         //addScore(game.player.name, game.player.score + ((int) game.player.time.getTimeSecs() * -2));
         game.player.time.stop();
@@ -660,7 +740,7 @@ class defuse extends Program{
     // Corps du programme
     void algorithm(){
         boolean fini = false;
-        while (!fini) {
+        while (!fini){
             int id = mainMenu();
             if (id == 1){
                 play();
