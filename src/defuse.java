@@ -88,10 +88,15 @@ class Player{
     int score = 0;
 }
 
+class Manual{
+    int page = 0;
+    int nbPages = 0;
+}
+
 class Game{
     Player player = new Player();
     Bombe bombe = new Bombe();
-    int page = 0;
+    Manual manual = new Manual();
 }
 
 class defuse extends Program{
@@ -100,6 +105,21 @@ class defuse extends Program{
     //            Fonctions de Debug          //
     //                                        //
     // -- // -- // -- // -- // -- // -- // -- //
+
+    // Fonction permettant d'enregistre dans un fichier debug
+    void saveDebug(String[] content){
+        saveCSV(new String[][]{content}, "debug.csv");
+    }
+
+    // Fonction permettant d'enregistre dans un fichier debug
+    void saveDebug(String content){
+        saveCSV(new String[][]{{content}}, "debug.csv");
+    }
+
+    // Fonction permettant d'enregistre dans un fichier debug
+    void saveDebug(String[][] content){
+        saveCSV(content, "debug.csv");
+    }
 
     // Fonction permettant d'afficher un tableau de String
     void printTable(String[] table){
@@ -128,13 +148,17 @@ class defuse extends Program{
         }
     }
 
-    String stringToMorceCode(String str){
-        String morceCode = "";
-        for (int i = 0; i < length(str); i++){
-            morceCode += str.charAt(i);
-            morceCode += " ";
+    int clamp(int value, int min, int max){
+        saveDebug(new String[]{"clamp", ""+value, ""+min, ""+max});
+        if (value < min){
+            return min;
         }
-        return morceCode;
+        else if (value > max){
+            return max;
+        }
+        else{
+            return value;
+        }
     }
 
     // -- // -- // -- // -- // -- // -- // -- //
@@ -161,6 +185,12 @@ class defuse extends Program{
             }
         }
         return true;
+    }
+
+    // Fonction permettant de récupérer le nombre fichier dans un dossier
+    int numberOfFiles(String path){
+        String[] files = getAllFilesFromDirectory(path);
+        return length(files);
     }
 
     // Fonction permettant de créer un tableau de String en 2D à partir d'un fichier csv
@@ -294,7 +324,6 @@ class defuse extends Program{
             score = 0;
         }
         while (index <= 10 && !stop){
-            println("SPECIFIC : " + scoresboard[index][1]);
             int last_score = stringToNumber(scoresboard[index][1]);
             if (score < last_score){
                 println(index + " " + last_score + " " + score + " " + stop);
@@ -316,7 +345,6 @@ class defuse extends Program{
             scoresboard[index][2] = ""+DateTimeFormatter.ofPattern("yyyy-MM-dd").format(LocalDateTime.now());
             saveCSV(scoresboard, "../ressources/csv/scoresboard.csv");
         }
-        readString();
     }
 
     // void debug(){
@@ -627,7 +655,7 @@ class defuse extends Program{
         println("Score: " + game.player.score);
         println();
         println();
-        pressEnterToContinue("principal");
+        pressEnterToContinue("tableau des scores");
     }
 
     void wait(String msg, int time){
@@ -686,16 +714,27 @@ class defuse extends Program{
         System.out.print("\033[H\033[2J");
         println();
         println();
-        println("Status de la Bombe:");
+        println("// -- // -- // -- // -- // -- // -- // -- //");
+        println();
+        println(centerString("Status de la Bombe", 44));
+        println();
+        println();
         println("Erreur: " + game.player.errors + " / 3");
         println("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
         println();
         println();
-        println("Manuel:");
-        println(getFileContent("../ressources/manual/" + game.page + ".txt"));
+        println("// -- // -- // -- // -- // -- // -- // -- //");
+        println();
+        println(centerString("Manuel - Page " + game.manual.page, 44));
         println();
         println();
-        println("Que voulez-vous faire ?");
+        println(getFileContent("../ressources/manual/" + game.manual.page + ".txt"));
+        println();
+        println("// -- // -- // -- // -- // -- // -- // -- //");
+        println();
+        println(centerString("Que voulez-vous faire ?", 44));
+        println();
+        println();
         println("1. Manuel - Page Suivante");
         println("2. Manuel - Page Précédente");
         println("3. Bombe - Désamorcer Module");
@@ -704,18 +743,12 @@ class defuse extends Program{
         print("Votre choix: ");
         int choice = getAnswer(new String[]{"1", "2", "3"});
         if (choice == 1){
-            game.page++;
+            game.manual.page = clamp(game.manual.page + 1, 0, game.manual.nbPages);
         } else if (choice == 2){
-            game.page--;
+            game.manual.page = clamp(game.manual.page - 1, 0, game.manual.nbPages);
         } else if (choice == 3){
             game.bombe.defused = true;
         }
-            // String answer = readString();
-            // if (equals(answer, "defuse")){
-            //     game.bombe.defused = true;
-            // } else {
-            //     game.player.errors++;
-            // }
     }
 
     // Fonction permettant de lancer le jeu
@@ -723,11 +756,12 @@ class defuse extends Program{
         Game game = new Game();
         game.player.name = introduction();
         game.player.time.start();
+        game.manual.nbPages = numberOfFiles("../ressources/manual") - 1;
         System.out.print("\033[H\033[2J");
-        while (game.player.errors < 3 || game.bombe.defused){
+        while (game.player.errors < 3 && !game.bombe.defused){
             playInterface(game);
         }
-        //addScore(game.player.name, game.player.score + ((int) game.player.time.getTimeSecs() * -2));
+        addScore(game.player.name, game.player.score + ((int) game.player.time.getTimeSecs() * -2));
         game.player.time.stop();
         if (game.bombe.defused){
             defuseScreen(game);
@@ -757,3 +791,26 @@ class defuse extends Program{
         }
     }
 }
+
+/*
+
+
+Page n°0
+
+Manuel de désamorçage de bombe
+
+Dans ce manuel vous trouveraus toutes les information
+
+nécéssaire pour désamorcer une bombe.
+
+Vous trouverez également des informations sur les
+
+différents modules de la bombe.
+
+Pour naviguer dans le manuel, utilisez les commandes
+
+1 - Page Suivante
+
+2 - Page Précédente
+
+*/

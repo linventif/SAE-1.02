@@ -1,0 +1,11 @@
+Manuel de désamorçage de bombe
+
+Dans ce manuel vous trouveraus toutes les information
+
+nécéssaire pour désamorcer une bombe.
+
+Vous trouverez également des informations sur les
+
+différents modules de la bombe.
+
+Pour naviguer dans le manuel, utilisez les commandes
