@@ -110,7 +110,7 @@ class Game{
     Manual manual = new Manual();
 }
 
-class defuse extends Program{
+class Defuse extends Program{
     // -- // -- // -- // -- // -- // -- // -- //
     //                                        //
     //            Fonctions de Debug          //
