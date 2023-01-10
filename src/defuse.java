@@ -5,7 +5,8 @@
 // -- // -- // -- // -- // -- // -- // -- //
 //                                        //
 // Ligne 001 : Sommaire                   //
-// Ligne 010 : Import des librairies      //
+// Ligne 020 : Import des Librairies      //
+// Ligne 030 : Classes                    //
 // Ligne 020 : Fonctions de Debug         //
 // Ligne 050 : Fonctions Primaires        //
 // Ligne 200 : Fonctions Secondaires      //
@@ -66,16 +67,26 @@ class StopWatch{
     }
 }
 
+class Cable{
+    boolean cut = false;
+    boolean canBeCut = false;
+    char color = 'R';
+}
+
 class Module{
     String name = "Module Sans Nom";
+    String id = "Aucun ID";
+    String graphic = "Aucun Graphique";
     String[] answers = {"A", "B", "C", "D"};
     String[] correctAnswers = {"A", "B", "C", "D"};
+    Cable[] cables = new Cable[5];
     boolean resolved = false;
     String manuel = "Aucun Manuel";
 }
 
 class Bombe{
     boolean defused = false;
+    int focusModule = 0;
     int nbModules = 3;
     int nbModulesResolve = 0;
     Module[] modules = new Module[nbModules];
@@ -217,11 +228,25 @@ class defuse extends Program{
         println();
     }
 
-    // Fonction permettant de créer un String de n caractères
+    // Fonction permettant de créer un String de n caractères c
     String repeatChar(int n, char c){
         String str = "";
         for (int i = 0; i < n; i++){
             str += c;
+        }
+        return str;
+    }
+
+    // Fonction permettant verifier une egalité entre deux char
+    boolean equals(char c1, char c2){
+        return c1 == c2;
+    }
+
+    // Fonction permettant de créer un String de n fois s
+    String repeatString(int n, String s){
+        String str = "";
+        for (int i = 0; i < n; i++){
+            str += s;
         }
         return str;
     }
@@ -288,6 +313,21 @@ class defuse extends Program{
             result = result * 10 + (int)charAt(s, i) - 48;
         }
         return result;
+    }
+
+    int randomInt(int min, int max){
+        return (int)(random() * (max - min + 1) + min);
+    }
+
+    // Fonction permettant de récupérer un fichier aléatoire dans un dossier
+    String getRandomFile(String folder){
+        String[] files = getAllFilesFromDirectory(folder);
+        return files[randomInt(0, length(files) - 1)];
+    }
+
+    // Fonction permettant de récupérer une valeur aléatoire dans un tableau de char
+    char getRandomChar(char[] chars){
+        return chars[randomInt(0, length(chars) - 1)];
     }
 
     // -- // -- // -- // -- // -- // -- // -- //
@@ -478,24 +518,24 @@ class defuse extends Program{
 
     // Fonction permettant de tester la fonction de fileExist
     void testFileExist(){
-        assertEquals(true, fileExist("../ressources/ascii", "test.txt"));
-        assertEquals(true, fileExist("../ressources/csv", "test.csv"));
+        assertEquals(true, fileExist("../ressources/test", "test.txt"));
+        assertEquals(true, fileExist("../ressources/test", "test.csv"));
         assertEquals(true, fileExist("../ressources/csv", "scoresboard.csv"));
-        assertEquals(false, fileExist("../ressources/ascii", "test.txtt"));
-        assertEquals(false, fileExist("../ressources/csv", "test.cvs"));
+        assertEquals(false, fileExist("../ressources/test", "test.txtt"));
+        assertEquals(false, fileExist("../ressources/test", "test.cvs"));
         assertEquals(false, fileExist("../ressources/csv", "scoresboard.cvs"));
         println("\u001B[32m" + "Test Function : " + centerString("File Exist", 30) + " : Passed" + "\u001B[0m");
     }
 
     // Fonction permettant de tester la fonction de getFileContent
     void testGetFileContent(){
-        assertEquals("JE SUIS UN FICHIER DE TEST\n", getFileContent("../ressources/ascii/test.txt"));
+        assertEquals("JE SUIS UN FICHIER DE TEST\n", getFileContent("../ressources/test/test.txt"));
         println("\u001B[32m" + "Test Function : " + centerString("Get File Content", 30) + " : Passed" + "\u001B[0m");
     }
 
     // Fonction permettant de tester la fonction de csvToTable
     void testCsvToTable(){
-        String[][] table = csvToTable("../ressources/csv/test.csv");
+        String[][] table = csvToTable("../ressources/test/test.csv");
         assertEquals("a", table[0][0]);
         assertEquals("b", table[0][1]);
         assertEquals("c", table[0][2]);
@@ -661,12 +701,11 @@ class defuse extends Program{
     void wait(String msg, int time){
         System.out.print("\033[H\033[2J");
         println();
+        println();
         print(msg);
         StopWatch timer = new StopWatch();
         timer.start();
-        while (timer.getTimeSecs() < time){
-            // Rien
-        }
+        delay(time * 1000);
     }
 
     // -- // -- // -- // -- // -- // -- // -- //
@@ -706,21 +745,124 @@ class defuse extends Program{
 
     // -- // -- // -- // -- // -- // -- // -- //
     //                                        //
+    //                 Modules                //
+    //                                        //
+    // -- // -- // -- // -- // -- // -- // -- //
+
+    void showCable(Module cable){
+        for (int i = 0; i < 4; i++){
+            println(repeatString(length(cable.cables), "  | |"));
+        }
+        for (int i = 0; i < 3; i++){
+            for (int j = 0; j < length(cable.cables); j++){
+                if (cable.cables[j].cut){
+                    print("  / /");
+                }
+                else{
+                    print("  | |");
+                }
+            }
+            println();
+        }
+        for (int i = 0; i < 4; i++){
+            println(repeatString(length(cable.cables), "  | |"));
+        }
+        println();
+        print(" ");
+        for (int i = 0; i < length(cable.cables); i++){
+            print(" [" + cable.cables[i].color + "] ");
+        }
+        println();
+        print(" ");
+        for (int i = 0; i < length(cable.cables); i++){
+            print(" [" + (i + 1) + "] ");
+        }
+    }
+
+    boolean cutCable(Module cable){
+        showCable(cable);
+        println("Quel cable couper ?");
+        String[] answers = new String[length(cable.cables)];
+        for (int i = 0; i < length(cable.cables); i++){
+            answers[i] = "" + (i + 1);
+        }
+        int id = getAnswer(answers);
+        if (cable.cables[id - 1].cut){
+            println("Ce cable est deja coupé !");
+            delay(1000);
+            cutCable(cable);
+        } else {
+            cable.cables[id - 1].cut = true;
+            showCable(cable);
+            println("Cable coupé !");
+            if (cable.cables[id - 1].color == 'R'){
+                println("Bravo, vous avez resolu le module !");
+                return true;
+            } else if (cable.cables[id - 1].color == 'V'){
+                println("Bravo, vous avez resolu le module !");
+                return true;
+            } else if (cable.cables[id - 1].color == 'B'){
+                println("Bravo, vous avez resolu le module !");
+                return true;
+            } else {
+                println("Malheureusement, ce n'est pas le bon cable !");
+                cable.cables[id - 1].cut = true;
+                delay(2500);
+                cutCable(cable);
+            }
+        }
+        return false;
+    }
+
+    // -- // -- // -- // -- // -- // -- // -- //
+    //                                        //
     //           Corps du Programme           //
     //                                        //
     // -- // -- // -- // -- // -- // -- // -- //
 
+    int selectModule(Game game) {
+        return 1;
+    }
+
+    String getModuleState(boolean state){
+        if (state){
+            return "Resolu";
+        } else {
+            return "Non Resolu";
+        }
+    }
+
     void playInterface(Game game){
         System.out.print("\033[H\033[2J");
-        println();
-        println();
         println("// -- // -- // -- // -- // -- // -- // -- //");
         println();
-        println(centerString("Status de la Bombe", 44));
+        println(centerString("Bombe", 44));
         println();
         println();
         println("Erreur: " + game.player.errors + " / 3");
         println("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
+        println();
+        if (game.bombe.focusModule == 0){
+            for (int i = 0; i < game.bombe.nbModules; i++){
+                println("Module n°" + (i + 1) + " : " + centerString(game.bombe.modules[i].name, 20) + " : " + getModuleState(game.bombe.modules[i].resolved));
+            }
+        } else {
+            println();
+            println("// -- // -- // -- // -- // -- // -- // -- //");
+            println();
+            println(centerString("Module : " + game.bombe.modules[game.bombe.focusModule].name, 44));
+            println();
+            println();
+
+
+            Module cable = new Module();
+            for (int i = 0; i < 5; i++){
+                cable.cables[i] = new Cable();
+                cable.cables[i].color = getRandomChar(new char[]{'R', 'V', 'B', 'M', 'J'});
+            }
+            showCable(cable);
+            //cutCable(cable);
+        }
         println();
         println();
         println("// -- // -- // -- // -- // -- // -- // -- //");
@@ -737,7 +879,11 @@ class defuse extends Program{
         println();
         println("1. Manuel - Page Suivante");
         println("2. Manuel - Page Précédente");
-        println("3. Bombe - Désamorcer Module");
+        if (game.bombe.focusModule == 0){
+            println("3. Bombe - Résoudre un Module");
+        } else {
+            println("3. Bombe - Retour a la Bombe");
+        }
         println();
         println();
         print("Votre choix: ");
@@ -746,8 +892,11 @@ class defuse extends Program{
             game.manual.page = clamp(game.manual.page + 1, 0, game.manual.nbPages);
         } else if (choice == 2){
             game.manual.page = clamp(game.manual.page - 1, 0, game.manual.nbPages);
-        } else if (choice == 3){
-            game.bombe.defused = true;
+        } else if (choice == 3 && game.bombe.focusModule == 0){
+            
+            game.bombe.focusModule = selectModule(game);
+        } else if (choice == 3 && game.bombe.focusModule != 0){
+            game.bombe.focusModule = 0;
         }
     }
 
@@ -757,6 +906,15 @@ class defuse extends Program{
         game.player.name = introduction();
         game.player.time.start();
         game.manual.nbPages = numberOfFiles("../ressources/manual") - 1;
+        for (int i = 0; i < game.bombe.nbModules; i++){
+            String[][] moduleInfo = csvToTable("../ressources/modules/" + getRandomFile("../ressources/modules"));
+            game.bombe.modules[i] = new Module();
+            game.bombe.modules[i].name = moduleInfo[0][1];
+            // game.bombe.modules[i].graphic = getFileContent("../ressources/ascii/" + moduleInfo[1][1]);
+            // game.bombe.modules[i].id = moduleInfo[2][1];
+        }
+    // // String[] answers = {"A", "B", "C", "D"};
+    // // String[] correctAnswers = {"A", "B", "C", "D"};
         System.out.print("\033[H\033[2J");
         while (game.player.errors < 3 && !game.bombe.defused){
             playInterface(game);

@@ -8,4 +8,4 @@ Vous trouverez également des informations sur les
 
 différents modules de la bombe.
 
-Pour naviguer dans le manuel, utilisez les commandes
+Pour naviguer dans le manuel, utilisez les commandes 1 et 2.
