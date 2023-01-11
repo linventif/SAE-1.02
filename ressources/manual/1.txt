@@ -2,12 +2,12 @@ Instrunction du Module : Fils
 
 Votre objectif est de coupé le bon fil !
 
-les fil on des couleur indiquer par des lettre (r, v, b, j, o, g)
+les fil on des couleur indiquer par des lettre (R, V, B, J, N)
 
-Si il n'y a qu'un seul fil rouge et qu'il est au bord droit, coupé le fils vert.
-Si il n'y a au moins deux fil vert voisin, coupé le fils vert de gauche.
-Si il n'y a qu'un seul fil jaune, coupé le fils rouge.
-Si il y a plus de 3 couleur de fils, coupé le fils rouge
-Si il y a pas de fils bleu, coupé le fils jaune.
-Si il y a plus de 2 fil vert, coupé le fils orange.
-Si aucune des solution précédente n'est valid coupé le fil du millieu.
+Si tout les fils sont d'une couleur différente, coupé n'importe quel fil.
+Si il y'a plus de 2 fils rouge, coupé un fils bleu.
+Si il n'y a pas de fils bleu, coupé le dernier fils.
+Si le premier fils est vert, coupé le premier fils.
+Si il y'a plus de 1 fils noir, coupé un fil rouge.
+Si le dernier fils est noir, coupé le dernier fils.
+Si il y'au moins 5 fils de la meme couleur, coupé n'importe quel fil.

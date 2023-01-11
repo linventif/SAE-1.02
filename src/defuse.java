@@ -120,6 +120,7 @@ class Game{
     boolean quit = false;
     boolean cheat = false;
     int maxPoints = 10000;
+    int errorCost = 350;
 }
 
 class Defuse extends Program{
@@ -129,17 +130,16 @@ class Defuse extends Program{
     //                                        //
     // -- // -- // -- // -- // -- // -- // -- //
 
-    // Fonction permettant d'enregistre dans un fichier debug
+    // Fonction permettant d'enregistre un type dans un fichier debug
     void saveDebug(String[] content){
         saveCSV(new String[][]{content}, "../ressources/test/debug.csv");
     }
-
-    // Fonction permettant d'enregistre dans un fichier debug
+    void saveDebug(boolean value){
+        saveCSV(new String[][]{{""+value}}, "../ressources/test/debug.csv");
+    }
     void saveDebug(String content){
         saveCSV(new String[][]{{content}}, "../ressources/test/debug.csv");
     }
-
-    // Fonction permettant d'enregistre dans un fichier debug
     void saveDebug(String[][] content){
         saveCSV(content, "../ressources/test/debug.csv");
     }
@@ -178,11 +178,6 @@ class Defuse extends Program{
             }
         }
         return binary;
-    }
-
-    // Fonction permettant de calculer le score d'un joueur
-    int calculateScore(Player player){
-        return (100 - player.errors) * (int)player.time.getTimeSecs();
     }
 
     // Fonction permettant d'afficher un tableau de String en 2D
@@ -368,11 +363,18 @@ class Defuse extends Program{
         return result;
     }
 
+    // Fonction récupérant un nombre aléatoire entre min et max
     int randomInt(int min, int max){
         return (int)(random() * (max - min + 1) + min);
     }
 
-    String randomTable(String[] table){
+    // Fonction récupérant une String aléatoire dans un tableau de String
+    String randomStringTable(String[] table){
+        return table[randomInt(0, length(table) - 1)];
+    }
+
+    // Fonction récupérant un char aléatoire dans un tableau de char
+    char randomCharTable(char[] table){
         return table[randomInt(0, length(table) - 1)];
     }
 
@@ -380,11 +382,6 @@ class Defuse extends Program{
     String getRandomFile(String folder){
         String[] files = getAllFilesFromDirectory(folder);
         return files[randomInt(0, length(files) - 1)];
-    }
-
-    // Fonction permettant de récupérer une valeur aléatoire dans un tableau de char
-    char getRandomChar(char[] chars){
-        return chars[randomInt(0, length(chars) - 1)];
     }
 
     // -- // -- // -- // -- // -- // -- // -- //
@@ -802,6 +799,24 @@ class Defuse extends Program{
     //                                        //
     // -- // -- // -- // -- // -- // -- // -- //
 
+    // Fonction permettant de définir le module en cours comme résolu
+    void sucessModule(Game game, String msg){
+        game.bombe.modules[game.bombe.focusModule - 1].resolved = true;
+        game.bombe.nbModulesResolve++;
+        game.player.score += game.bombe.modules[game.bombe.focusModule - 1].points;
+        println(msg);
+        delay(2000);
+        game.bombe.focusModule = 0;
+    }
+
+    // Fonction permettant de d'ajouter une erreur
+    void addError(Game game, String msg){
+        game.player.errors++;
+        game.player.score -= game.errorCost;
+        println(msg);
+        delay(2500);
+    }
+
     // Fonction permettant de créer les modules de la bombe
     void initModules(Game game){
         for (int i = 0; i < game.bombe.nbModules; i++){
@@ -819,8 +834,13 @@ class Defuse extends Program{
                 for (int j = 0; j < length(words); j++){
                     words[j] = moduleInfo[j + 2][1];
                 }
-                game.bombe.modules[i].morse.world = randomTable(words);
+                game.bombe.modules[i].morse.world = stringLower(randomStringTable(words));
                 game.bombe.modules[i].morse.morse = stringToMorse(game.bombe.modules[i].morse.world);
+            } else if (equals(game.bombe.modules[i].name, "Fils")){
+                for (int j = 0; j < length(game.bombe.modules[i].cables); j++){
+                    game.bombe.modules[i].cables[j] = new Cable();
+                    game.bombe.modules[i].cables[j].color = randomCharTable(new char[]{'R', 'B', 'J', 'N', 'V'});
+                }
             }
         }
     }
@@ -835,11 +855,10 @@ class Defuse extends Program{
         }
         for (int i = 0; i < 3; i++){
             for (int j = 0; j < length(cable.cables); j++){
-                if (cable.cables[j].cut){
-                    print("  / /");
-                }
-                else{
+                if (!cable.cables[j].cut){
                     print("  | |");
+                } else{
+                    print("  / /");
                 }
             }
             println();
@@ -859,39 +878,54 @@ class Defuse extends Program{
         }
     }
 
-    boolean cutCable(Module cable){
-        showCable(cable);
+    void cutCable(Game game){
         println("Quel cable couper ?");
-        String[] answers = new String[length(cable.cables)];
-        for (int i = 0; i < length(cable.cables); i++){
+        String[] answers = new String[length(game.bombe.modules[game.bombe.focusModule - 1].cables)];
+        for (int i = 0; i < length(game.bombe.modules[game.bombe.focusModule - 1].cables); i++){
             answers[i] = "" + (i + 1);
         }
         int id = getAnswer(answers);
-        if (cable.cables[id - 1].cut){
+        if (game.bombe.modules[game.bombe.focusModule - 1].cables[id - 1].cut){
             println("Ce cable est deja coupé !");
             delay(1000);
-            cutCable(cable);
+            cutCable(game);
         } else {
-            cable.cables[id - 1].cut = true;
-            showCable(cable);
-            println("Fils coupé !");
-            if (cable.cables[id - 1].color == 'R'){
-                println("Bravo, vous avez resolu le module !");
-                return true;
-            } else if (cable.cables[id - 1].color == 'V'){
-                println("Bravo, vous avez resolu le module !");
-                return true;
-            } else if (cable.cables[id - 1].color == 'B'){
-                println("Bravo, vous avez resolu le module !");
-                return true;
+            Module moduleTemp = game.bombe.modules[game.bombe.focusModule - 1]
+            int nbRed, nbBlue, nbGreen, nbYellow, nbBlack;
+            int nbCable = length(moduleTemp.cables);
+            for (int i = 0; i < nbCable; i++){
+                if (moduleTemp.cables[i].color == 'R'){
+                    nbRed++;
+                } else if (moduleTemp.cables[i].color == 'B'){
+                    nbBlue++;
+                } else if (moduleTemp.cables[i].color == 'J'){
+                    nbYellow++;
+                } else if (moduleTemp.cables[i].color == 'N'){
+                    nbBlack++;
+                } else if (moduleTemp.cables[i].color == 'V'){
+                    nbGreen++;
+                }
+            }
+            moduleTemp.cables[id - 1].cut = true;
+            if (moduleTemp.cables[id - 1].color == 'B' && nbRed > 2){
+                sucessModule(game, "Bravo, vous avez réussi le module Cable !");
+            } else if (moduleTemp.cables[id - 1] == nbCable && nbRed == 0){
+                sucessModule(game, "Bravo, vous avez réussi le module Cable !");
+            } else if (moduleTemp.cables[id - 1] == 1 && moduleTemp.cables[id - 1].color == 'V'){
+                sucessModule(game, "Bravo, vous avez réussi le module Cable !");
+            } else if (moduleTemp.cables[id - 1] == nbCable && moduleTemp.cables[id - 1].color == 'B'){
+                sucessModule(game, "Bravo, vous avez réussi le module Cable !");
+            } else if (moduleTemp.cables[id - 1].color == 'R' && nbRed > 1){
+                sucessModule(game, "Bravo, vous avez réussi le module Cable !");
+            } else if (nbRed > 5 || nbBlack > 5 || nbGreen > 5 || nbBlue > 5 || nbYellow > 5){
+                sucessModule(game, "Bravo, vous avez réussi le module Cable !");
+            } else if (nbRed > >= || nbBlack > >= || nbGreen > >= || nbBlue > >= || nbYellow >= 1){
+                sucessModule(game, "Bravo, vous avez réussi le module Cable !");
             } else {
-                println("Malheureusement, ce n'est pas le bon cable !");
-                cable.cables[id - 1].cut = true;
-                delay(2500);
-                cutCable(cable);
+                addError(game, "Malheureusement, ce n'est pas le bon cable !");
+                moduleTemp.cables[id - 1].cut = true;
             }
         }
-        return false;
     }
 
     // -- // -- // -- // -- //
@@ -916,18 +950,11 @@ class Defuse extends Program{
             println(game.bombe.modules[game.bombe.focusModule - 1].morse.world);
         }
         print("Entrer le mot de passe : ");
-        String word = readString();
+        String word = stringLower(onlyLetter(readString()));
         if (equals(word, game.bombe.modules[game.bombe.focusModule - 1].morse.world)){
-            game.bombe.modules[game.bombe.focusModule - 1].resolved = true;
-            game.bombe.nbModulesResolve++;
-            game.player.score += game.bombe.modules[game.bombe.focusModule - 1].points;
-            println("Mot de Passe Corect !");
-            delay(2000);
-            game.bombe.focusModule = 0;
+            sucessModule(game, "Mot de Passe Corect !");
         } else {
-            game.player.errors++;
-            println("Mot de Passe Incorect !");
-            delay(2000);
+            addError(game, "Mot de Passe Incorect !");
         }
     }
 
@@ -977,16 +1004,9 @@ class Defuse extends Program{
         print("Entrer l'ip du Serveur : ");
         String ip = readString();
         if (equals(ip, game.bombe.modules[game.bombe.focusModule - 1].ip.ipAnswer)){
-            game.bombe.modules[game.bombe.focusModule - 1].resolved = true;
-            game.bombe.nbModulesResolve++;
-            game.player.score += game.bombe.modules[game.bombe.focusModule - 1].points;
-            println("IP Serveur Valide !");
-            delay(2000);
-            game.bombe.focusModule = 0;
+            sucessModule(game, "IP Serveur Corect !");
         } else {
-            game.player.errors++;
-            println("IP Serveur Invalid !");
-            delay(2000);
+            addError(game, "IP Serveur Incorect !");
         }
     }
 
@@ -1038,7 +1058,7 @@ class Defuse extends Program{
         println();
         println("Erreur: " + game.player.errors + " / 3");
         println("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
-        println("Score: " + clamp(((game.player.score - game.player.errors * 350) + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints));
+        println("Score: " + clamp((game.player.score + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints));
         println("Temps: " + game.player.time.getTimeSecs() + " secondes");
         println();
         if (game.bombe.focusModule == 0){
@@ -1053,13 +1073,9 @@ class Defuse extends Program{
             println();
             println();
             if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Fils")) {
-                Module cable = new Module();
-                for (int i = 0; i < 5; i++){
-                    cable.cables[i] = new Cable();
-                    cable.cables[i].color = getRandomChar(new char[]{'R', 'V', 'B', 'M', 'J'});
-                }
-                showCable(cable);
-                //cutCable(cable);
+                println("Trouver le bon fil a coupé !");
+                println();
+                showCable(game.bombe.modules[game.bombe.focusModule - 1]);
             } else if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Binaire")){
                 println("Trouver l'ip de ce serveur : " + game.bombe.modules[game.bombe.focusModule - 1].ip.ipBinaryShow);
             } else if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Morse")){
@@ -1114,8 +1130,7 @@ class Defuse extends Program{
         } else if (choice == 3 && game.bombe.focusModule != 0){
             game.bombe.focusModule = 0;
         } else if (choice == 4 && equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Fils")){
-            Module cable = game.bombe.modules[game.bombe.focusModule];
-            cutCable(cable);
+            cutCable(game);
         } else if (choice == 4 && equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Binaire")){
             enterIP(game);
         } else if (choice == 4 && equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Morse")){
@@ -1124,28 +1139,35 @@ class Defuse extends Program{
     }
 
     void play(){
-        Game game = new Game();
-        game.player.name = introduction();
-        game.player.time.start();
-        game.manual.nbPages = numberOfFiles("../ressources/manual") - 1;
-        initModules(game);
         String[][] settings = csvToTable("../ressources/csv/settings.csv");
+        Game game = new Game();
         game.cheat = equals(settings[0][1], "true");
         game.maxPoints = stringToNumber(settings[1][1]);
+        game.errorCost = stringToNumber(settings[2][1]);
+        game.player.time.start();
+        game.manual.nbPages = numberOfFiles("../ressources/manual") - 1;
+        if (game.cheat){
+            game.player.name = "DEBUG - TEST";
+        } else {
+            game.player.name = introduction();
+        }
+        initModules(game);
         System.out.print("\033[H\033[2J");
         while (game.player.errors < 3 && game.bombe.nbModulesResolve != game.bombe.nbModules && !game.quit){
             playInterface(game);
         }
-        addScore(game.player.name, clamp(((game.player.score - game.player.errors * 350) + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints));
-        game.player.time.stop();
-        if (!game.quit){
-            if (game.bombe.nbModulesResolve == game.bombe.nbModules){
-                defuseScreen(game);
-            } else {
-                deathScreen(game);
+        if (!game.cheat){
+            addScore(game.player.name, clamp((game.player.score + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints));
+            game.player.time.stop();
+            if (!game.quit){
+                if (game.bombe.nbModulesResolve == game.bombe.nbModules){
+                    defuseScreen(game);
+                } else {
+                    deathScreen(game);
+                }
             }
+            scoresboard();
         }
-        scoresboard();
     }
 
     // Corps du programme
@@ -1169,86 +1191,3 @@ class Defuse extends Program{
         }
     }
 }
-
-/*
-
-
-### Page n°0
-
-Manuel de désamorçage de bombe
-
-Dans ce manuel vous trouveraus toutes les information
-
-nécéssaire pour désamorcer une bombe.
-
-Vous trouverez également des informations sur les
-
-différents modules de la bombe.
-
-Pour naviguer dans le manuel, utilisez les commandes
-
-### Page n°1
-
-Instrunction du Module : Fils
-
-Votre objectif est de coupé le bon fil !
-
-les fil on des couleur indiquer par des lettre (r, v, b, j, o, g)
-
-Si il n'y a qu'un seul fil rouge et qu'il est au bord droit, coupé le fils vert.
-Si il n'y a au moins deux fil vert voisin, coupé le fils vert de gauche.
-Si il n'y a qu'un seul fil jaune, coupé le fils rouge.
-Si il y a plus de 3 couleur de fils, coupé le fils rouge
-Si il y a pas de fils bleu, coupé le fils jaune.
-Si il y a plus de 2 fil vert, coupé le fils orange.
-Si aucune des solution précédente n'est valid coupé le fil du millieu.
-
-### Page n°2
-
-Instruction du Module : Binaires
-
-Votre objectif est de trouver le code secret.
-
-Pour cela, il vous suffit de convertir chaque chiffre du nombre binaire en décimal.
-
-0000 0001 = 1
-0000 0010 = 2
-0000 0011 = 3
-[...]
-0000 1000 = 8
-0000 1111 = 15
-0011 0000 = 48
-1111 1111 = 255
-
-### Page n°3
-
-Instruction du Module : Morse
-
-Votre objectif est de trouver le mot de passe.
-
-Pour cela, il vous suffit de convertir chaque lettre du mot en morse.
-
-A = .-    B = -...  C = -.-.  D = -..   E = .
-F = ..-.  G = --.   H = ....  I = ..    J = .---
-K = -.-   L = .-..  M = --    N = -.    O = ---
-P = .--.  Q = --.-  R = .-.   S = ...   T = -
-U = ..-   V = ...-  W = .--   X = -..-  Y = -.--
-Z = --..
-
-BONJOUR = -... --- -. -. --- --- ..- .-. --- .-.
-LINVENTIF = .-.. .. -. ... - .. -. - .. .. - .... .. -.
-
-### Page n°4
-
-Instruction du Module : Terminal
-
-Votre objectif est de supprimer le fichier qui déclanche la bombe.
-
-Pour cela, il vous devez utuliser les commandes suivantes :
-
-cd : Permet de changer de dossier
-rm : Permet de supprimer un fichier
-ls : Permet de lister les fichiers d'un dossier
-pwd : Permet de savoir dans quel dossier on se trouve
-
-*/
