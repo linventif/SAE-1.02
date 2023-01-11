@@ -1,8 +1,8 @@
 Instruction du Module : Binaires
 
-Votre objectif est de trouvé le code secret.
+Votre objectif est de trouvé l'ip du serveur pirate.
 
-Pour cela, il vous suffit de convertir chaque chiffre du nombre binaire en décimal.
+Pour cela, il vous suffit de convertir chaque bite en décimal.
 
 0000 0001 = 1
 0000 0010 = 2
@@ -12,3 +12,5 @@ Pour cela, il vous suffit de convertir chaque chiffre du nombre binaire en déci
 0000 1111 = 15
 0011 0000 = 48
 1111 1111 = 255
+
+Rentrer l'ipv4 comme cesi : nb1.nb2.nb3.bn4 (ex:123.123.123.123)

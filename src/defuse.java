@@ -73,15 +73,17 @@ class Cable{
     char color = 'R';
 }
 
+class IPAddress{
+    int[] ip = {0, 0, 0, 0};
+    String[] ipBinary = ipToString(ip);
+    String ipShow = ipBinaryToString(ipBinary)
+}
+
 class Module{
     String name = "Module Sans Nom";
-    String id = "Aucun ID";
-    String graphic = "Aucun Graphique";
-    String[] answers = {"A", "B", "C", "D"};
-    String[] correctAnswers = {"A", "B", "C", "D"};
-    Cable[] cables = new Cable[5];
     boolean resolved = false;
-    String manuel = "Aucun Manuel";
+    Cable[] cables = new Cable[5];
+    IPAddress ip = new IPAddress();
 }
 
 class Bombe{
@@ -169,6 +171,11 @@ class Defuse extends Program{
         while (number > 0){
             binary = (number % 2) + binary;
             number /= 2;
+        }
+        if (length(""+binary) < 8){
+            while (length(""+binary) < 8){
+                binary = "0"+binary;
+            }
         }
         return binary;
     }
@@ -519,6 +526,10 @@ class Defuse extends Program{
         println("\u001B[32m" + "Test Function : " + centerString("Repeat Char", 30) + " : Passed" + "\u001B[0m");
     }
 
+    // void testIP(){
+    //     assertEquals("127.0.0.1", 
+    // }
+
     // Fonction permettant de tester la fonction de centerString
     void testCenterString(){
         assertEquals(" a ", centerString("a", 3));
@@ -740,6 +751,33 @@ class Defuse extends Program{
         delay(time * 1000);
     }
 
+    String ipToString(int[] ip){
+        String str = "";
+        for (int i = 0; i < length(ip); i++){
+            str += ip[i];
+            if (i != length(ip) - 1){
+                str += ".";
+            }
+        }
+        return str;
+    }
+
+    String ipBinaryToString(String[] ipBinary){
+        String str = "";
+        for (int i = 0; i < length(ipBinary); i++){
+            if (ipBinary[i] == null && i == 0){
+                str += "0000 0000";
+            } else if (ipBinary[i] == null){
+                str += " 0000 0000";
+            } else if (i == 0){
+                str += substring(ipBinary[i], 0, 4) + " " + substring(ipBinary[i], 4, 8);
+            } else {
+                str += " | " + substring(ipBinary[i], 0, 4) + " " + substring(ipBinary[i], 4, 8);
+            }
+        }
+        return str;
+    }
+
     // -- // -- // -- // -- // -- // -- // -- //
     //                                        //
     //            Fonctions Menu              //
@@ -780,6 +818,38 @@ class Defuse extends Program{
     //                 Modules                //
     //                                        //
     // -- // -- // -- // -- // -- // -- // -- //
+
+    initModules(Game game){
+        for (int i = 0; i < game.bombe.nbModules; i++){
+            String[][] moduleInfo = csvToTable("../ressources/modules/" + getRandomFile("../ressources/modules"));
+            game.bombe.modules[i] = new Module();
+           game.bombe.modules[i].name.name = moduleInfo[0][1];
+            if (equals("Binaire", game.bombe.modules[i].name)){
+                
+            }
+        }
+
+        /*
+
+
+        int[] ip = new int[4];
+        for (int i = 0; i < length(ip); i++){
+            ip[i] = randomInt(0,255);
+        }
+        String[] ipBinary = new String[4];
+        for (int i = 0; i < length(ipBinary); i++){
+            ipBinary[i] = numberToBinary(ip[i]);
+        }
+        printTable(ipBinary);
+        println(ipBinaryToString(ipBinary));
+        println(ipToString(ip));
+
+        String[] answers = {"A", "B", "C", "D"};
+        String[] correctAnswers = {"A", "B", "C", "D"};
+
+        */
+
+    }
 
     void showCable(Module cable){
         for (int i = 0; i < 4; i++){
@@ -953,21 +1023,12 @@ class Defuse extends Program{
         }
     }
 
-    // Fonction permettant de lancer le jeu
     void play(){
         Game game = new Game();
         game.player.name = introduction();
         game.player.time.start();
         game.manual.nbPages = numberOfFiles("../ressources/manual") - 1;
-        for (int i = 0; i < game.bombe.nbModules; i++){
-            String[][] moduleInfo = csvToTable("../ressources/modules/" + getRandomFile("../ressources/modules"));
-            game.bombe.modules[i] = new Module();
-            game.bombe.modules[i].name = moduleInfo[0][1];
-            // game.bombe.modules[i].graphic = getFileContent("../ressources/ascii/" + moduleInfo[1][1]);
-            // game.bombe.modules[i].id = moduleInfo[2][1];
-        }
-    // // String[] answers = {"A", "B", "C", "D"};
-    // // String[] correctAnswers = {"A", "B", "C", "D"};
+        initModules();
         System.out.print("\033[H\033[2J");
         while (game.player.errors < 3 && !game.bombe.defused){
             playInterface(game);
@@ -984,7 +1045,8 @@ class Defuse extends Program{
 
     // Corps du programme
     void algorithm(){
-        print(morseToString(".... . .-.. .-.. --- / .-- --- .-. .-.. -.."));
+        // print(morseToString(".... . .-.. .-.. --- / .-- --- .-. .-.. -.."));
+        //println(numberToBinary(10));
         boolean fini = false;
         while (!fini){
             int id = mainMenu();

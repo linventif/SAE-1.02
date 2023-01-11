@@ -1,1 +1,12 @@
 name,Morse
+nbWords,10
+word1,SECRET
+word2,DESAMORCER
+word3,DESAMORCEUR
+word4,CABLE
+word5,ORDINATEUR
+word6,DECODEUR
+word7,MORSE
+word8,BINAIRE
+word9,ETEINDRE
+word10,ALLUMER
