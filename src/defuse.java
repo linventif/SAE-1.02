@@ -989,7 +989,7 @@ class Defuse extends Program{
 
     void enterWord(Game game){
         if (game.cheat){
-            println(game.bombe.modules[game.bombe.focusModule - 1].morse.world);
+            println("MODE CHEAT ACTIVER : " + game.bombe.modules[game.bombe.focusModule - 1].morse.world);
         }
         printSlow("Entrer le mot de passe : ");
         String word = stringLower(onlyLetter(readString()));
@@ -1041,7 +1041,7 @@ class Defuse extends Program{
 
     void enterIP(Game game){
         if (game.cheat){
-            println(game.bombe.modules[game.bombe.focusModule - 1].ip.ipAnswer);
+            println("MODE CHEAT ACTIVER : " + game.bombe.modules[game.bombe.focusModule - 1].ip.ipAnswer);
         }
         printSlow("Entrer l'ip du Serveur : ");
         String ip = readString();

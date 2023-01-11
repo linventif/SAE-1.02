@@ -1,14 +1,16 @@
 ## Informations Générales
 
-Nom du projet: Desamorceur
+### Vidéo de présentation: https://youtu.be/APwcJ4E5A2I
 
-Auteur: [Linventif](https://github.com/linventif)
+### Dépot GitHub : https://github.com/linventif/SAE-1.02
 
-Date de création: 2022-12-12
+### Nom du projet: Desamorceur
 
-Version: 0.1.0
+### Auteur: [Linventif](https://github.com/linventif)
 
-Vidéo de présentation: [https://youtu.be/w_ZVAs7eNpg](https://youtu.be/w_ZVAs7eNpg)
+### Date de création: 2022-12-12
+
+### Version: 0.1.0
 
 ## Description
 
@@ -32,3 +34,29 @@ Le jeu du Désamorceur consite a désamorcer une bombe en résolvant plusieur pr
  - ##### Trace d'execution textuelle du jeu dans le fichier ExecutionTrace.md
 
 - ##### Manuel Entier dissponible dans le fichier Manual.md
+
+### Paramettres du Jeu
+
+- #### Réinitialiser les Scores
+
+Permet de réinitialiser les scores du jeu
+
+- #### Réinitialiser les Paramettres
+
+Permet de réinitialiser les paramettres du jeu
+
+- #### Test de Debugage
+
+Permet de lancer les fonctions de test / debugage
+
+- #### Ajouter un Score
+
+Permet d'ajouter un score au tableau des scores
+
+- #### Activer le Mode Triche
+
+Permet d'activer le mode triche du jeu (vous pouvez donc voir les reponse avant de les entrer)
+
+- #### Vitesse du Text
+
+Permet de styliser le jeu en ajoutant un temps avant chaque lettre du texte
