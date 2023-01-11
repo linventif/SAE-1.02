@@ -1,16 +1,18 @@
 ## Informations Générales
 
-#### Vidéo de présentation: https://youtu.be/APwcJ4E5A2I
+- Nom du projet: Desamorceur
 
-#### Dépot GitHub : https://github.com/linventif/SAE-1.02
+- Auteur: [Linventif](https://github.com/linventif)
 
-#### Nom du projet: Desamorceur
+- License : CC BY-SA-NC 4.0
 
-#### Auteur: [Linventif](https://github.com/linventif)
+- Vidéo de présentation: https://youtu.be/APwcJ4E5A2I
 
-#### Date de création: 2022-12-12
+- Dépot GitHub : https://github.com/linventif/SAE-1.02
 
-#### Version: 0.1.0
+- Date de création: 2022-12-12
+
+- Version: 1.1
 
 ## Description
 
