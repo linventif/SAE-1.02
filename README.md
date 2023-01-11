@@ -4,11 +4,11 @@
 
 - Auteur: [Linventif](https://github.com/linventif)
 
-- License : CC BY-SA-NC 4.0
+- License : [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
 
-- Vidéo de présentation: https://youtu.be/APwcJ4E5A2I
+- Vidéo de présentation: [Presentation SAE 1.02](https://youtu.be/APwcJ4E5A2I)
 
-- Dépot GitHub : https://github.com/linventif/SAE-1.02
+- Dépot GitHub : [SAE-1.02](https://github.com/linventif/SAE-1.02)
 
 - Date de création: 2022-12-12
 
