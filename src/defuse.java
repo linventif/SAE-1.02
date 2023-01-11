@@ -144,11 +144,58 @@ class Defuse extends Program{
         saveCSV(content, "../ressources/test/debug.csv");
     }
 
+    // Fonction permettant de créer un tableau de String en 2D à partir d'un fichier csv
+    String[][] csvToTable(String csvPath){
+        CSVFile csv = loadCSV(csvPath);
+        String[][] table = new String[rowCount(csv)][columnCount(csv)];
+        for (int i = 0; i < rowCount(csv); i++){
+            for (int j = 0; j < columnCount(csv); j++){
+                table[i][j] = getCell(csv, i, j);
+            }
+        }
+        return table;
+    }
+
+    // Fonction permettant de convertir un String en int
+    int stringToNumber(String s){
+        if (s == null || equals(s, "") || equals(s, "null")){
+            return 0;
+        }
+        int result = 0;
+        for (int i = 0; i < length(s); i++){
+            result = result * 10 + (int)charAt(s, i) - 48;
+        }
+        return result;
+    }
+
+    String[][] settings = csvToTable("../ressources/csv/settings.csv");
+    int slowSpeed = stringToNumber(settings[3][1]);
+
+    void printSlow(String str){
+        if (slowSpeed > 0){
+            for (int i = 0; i < length(str); i++){
+                print(str.charAt(i));
+                delay(slowSpeed);
+            }
+        } else {
+            print(str);
+        }
+    }
+
+    void printlnSlow(String str){
+        if (slowSpeed > 0){
+            printSlow(str);
+            println();
+        } else {
+            println(str);
+        }
+    }
+
     // Fonction permettant d'afficher un tableau de String
     void printTable(String[] table){
         println();
         for (int i = 0; i < length(table, 1); i++){
-            println("["+(i+1)+"]: "+table[i]);
+            printlnSlow("["+(i+1)+"]: "+table[i]);
             println();
         }
     }
@@ -241,18 +288,6 @@ class Defuse extends Program{
         return length(files);
     }
 
-    // Fonction permettant de créer un tableau de String en 2D à partir d'un fichier csv
-    String[][] csvToTable(String csvPath){
-        CSVFile csv = loadCSV(csvPath);
-        String[][] table = new String[rowCount(csv)][columnCount(csv)];
-        for (int i = 0; i < rowCount(csv); i++){
-            for (int j = 0; j < columnCount(csv); j++){
-                table[i][j] = getCell(csv, i, j);
-            }
-        }
-        return table;
-    }
-
     // Fonction permettant d'afficher les réponses possibles
     void printAnswers(String[] answers){
         for (int i = 0; i < length(answers); i++){
@@ -284,6 +319,16 @@ class Defuse extends Program{
         String newStr = "";
         for (int i = 0; i < length(str); i++){
             if ((str.charAt(i) >= 'a' && str.charAt(i) <= 'z') || (str.charAt(i) >= 'A' && str.charAt(i) <= 'Z')){
+                newStr += str.charAt(i);
+            }
+        }
+        return newStr;
+    }
+
+    String onlyInt(String str){
+        String newStr = "";
+        for (int i = 0; i < length(str); i++){
+            if ((str.charAt(i) >= '0' && str.charAt(i) <= '9')){
                 newStr += str.charAt(i);
             }
         }
@@ -351,18 +396,6 @@ class Defuse extends Program{
         return nbLines;
     }
 
-    // Fonction permettant de convertir un String en int
-    int stringToNumber(String s){
-        if (s == null || equals(s, "") || equals(s, "null")){
-            return 0;
-        }
-        int result = 0;
-        for (int i = 0; i < length(s); i++){
-            result = result * 10 + (int)charAt(s, i) - 48;
-        }
-        return result;
-    }
-
     // Fonction récupérant un nombre aléatoire entre min et max
     int randomInt(int min, int max){
         return (int)(random() * (max - min + 1) + min);
@@ -401,9 +434,14 @@ class Defuse extends Program{
 
     // Fonction permettant de reinitialiser les paramettre
     void resetSettings(){
-        String[][] settings = new String[2][2];
         settings[0][0] = "cheat";
         settings[0][1] = "false";
+        settings[1][0] = "maxPoints";
+        settings[1][1] = "1000000";
+        settings[2][0] = "errorCost";
+        settings[2][1] = "350";
+        settings[3][0] = "textSpeed";
+        settings[3][1] = "0";
         saveCSV(settings, "../ressources/csv/settings.csv");
     }
 
@@ -471,10 +509,10 @@ class Defuse extends Program{
         String answer = stringLower(readString());
         while (!containsString(answers, answer) && !debug){
             println();
-            println("Veuillez entrer une réponse valide ! ");
-            print("Réponse Possible: ");
+            printlnSlow("Veuillez entrer une réponse valide ! ");
+            printSlow("Réponse Possible: ");
             printAnswers(answers);
-            print(" > ");
+            printSlow(" > ");
             answer = stringLower(readString());
             if (equals(answer, "debug")){
                 debug = true;
@@ -486,8 +524,8 @@ class Defuse extends Program{
     // Fonction permettant de verifier si un pseudo est valide
     String validPseudo(String pseudo){
         while (length(pseudo) < 3 || length(pseudo) > 20 || !containsOnlyChar(pseudo, 'a', 'z')){
-            println("Votre pseudo doit contenir entre 3 et 20 caractères et ne doit pas contenir que des lettres minuscules !");
-            print(" > ");
+            printlnSlow("Votre pseudo doit contenir entre 3 et 20 caractères et ne doit pas contenir que des lettres minuscules !");
+            printSlow(" > ");
             pseudo = readString();
         }
         pseudo = firstLetterUpper(pseudo);
@@ -513,7 +551,7 @@ class Defuse extends Program{
         assertEquals(false, containsString(table, "h"));
         assertEquals(false, containsString(table, "i"));
         assertEquals(false, containsString(table, "j"));
-        println("\u001B[32m" + "Test Function : " + centerString("Contains String", 30) + " : Passed" + "\u001B[0m");
+        printlnSlow("\u001B[32m" + "Test Function : " + centerString("Contains String", 30) + " : Passed" + "\u001B[0m");
     }
 
     // Fonction permettant de tester la fonction repeatChar
@@ -528,7 +566,7 @@ class Defuse extends Program{
         assertEquals("        ", repeatChar(8, ' '));
         assertEquals("         ", repeatChar(9, ' '));
         assertEquals("          ", repeatChar(10, ' '));
-        println("\u001B[32m" + "Test Function : " + centerString("Repeat Char", 30) + " : Passed" + "\u001B[0m");
+        printlnSlow("\u001B[32m" + "Test Function : " + centerString("Repeat Char", 30) + " : Passed" + "\u001B[0m");
     }
 
     // void testIP(){
@@ -545,7 +583,7 @@ class Defuse extends Program{
         assertEquals("    a   ", centerString("a", 8));
         assertEquals("    a    ", centerString("a", 9));
         assertEquals("     a    ", centerString("a", 10));
-        println("\u001B[32m" + "Test Function : " + centerString("Center String", 30) + " : Passed" + "\u001B[0m");
+        printlnSlow("\u001B[32m" + "Test Function : " + centerString("Center String", 30) + " : Passed" + "\u001B[0m");
     }
 
     // Fonction permettant de tester la fonction de indexOfString
@@ -561,7 +599,7 @@ class Defuse extends Program{
         assertEquals(-1, indexOfString(table, "h"));
         assertEquals(-1, indexOfString(table, "i"));
         assertEquals(-1, indexOfString(table, "j"));
-        println("\u001B[32m" + "Test Function : " + centerString("Index Of String", 30) + " : Passed" + "\u001B[0m");
+        printlnSlow("\u001B[32m" + "Test Function : " + centerString("Index Of String", 30) + " : Passed" + "\u001B[0m");
     }
 
     // Fonction permettant de tester la fonction de fileExist
@@ -572,13 +610,13 @@ class Defuse extends Program{
         assertEquals(false, fileExist("../ressources/test", "test.txtt"));
         assertEquals(false, fileExist("../ressources/test", "test.cvs"));
         assertEquals(false, fileExist("../ressources/csv", "scoresboard.cvs"));
-        println("\u001B[32m" + "Test Function : " + centerString("File Exist", 30) + " : Passed" + "\u001B[0m");
+        printlnSlow("\u001B[32m" + "Test Function : " + centerString("File Exist", 30) + " : Passed" + "\u001B[0m");
     }
 
     // Fonction permettant de tester la fonction de getFileContent
     void testGetFileContent(){
         assertEquals("JE SUIS UN FICHIER DE TEST\n", getFileContent("../ressources/test/test.txt"));
-        println("\u001B[32m" + "Test Function : " + centerString("Get File Content", 30) + " : Passed" + "\u001B[0m");
+        printlnSlow("\u001B[32m" + "Test Function : " + centerString("Get File Content", 30) + " : Passed" + "\u001B[0m");
     }
 
     // Fonction permettant de tester la fonction de csvToTable
@@ -593,7 +631,7 @@ class Defuse extends Program{
         assertEquals("g", table[2][0]);
         assertEquals("h", table[2][1]);
         assertEquals("i", table[2][2]);
-        println("\u001B[32m" + "Test Function : " + centerString("Csv To Table", 30) + " : Passed" + "\u001B[0m");
+        printlnSlow("\u001B[32m" + "Test Function : " + centerString("Csv To Table", 30) + " : Passed" + "\u001B[0m");
     }
 
     // Fonction permettant de tester la fonction de tableToCsv
@@ -601,7 +639,7 @@ class Defuse extends Program{
         for (int i = 0; i < 10; i++){
             assertEquals(i, stringToNumber("" + i));
         }
-        println("\u001B[32m" + "Test Function : " + centerString("String To Number", 30) + " : Passed" + "\u001B[0m");
+        printlnSlow("\u001B[32m" + "Test Function : " + centerString("String To Number", 30) + " : Passed" + "\u001B[0m");
     }
 
     // -- // -- // -- // -- // -- // -- // -- //
@@ -611,7 +649,7 @@ class Defuse extends Program{
     // -- // -- // -- // -- // -- // -- // -- //
 
     void pressEnterToContinue(String menu){
-        print("Appuyez sur entrée pour continuer vers le menu " + menu + ".");
+        printSlow("Appuyez sur entrée pour continuer vers le menu " + menu + ".");
         readString();
     }
 
@@ -621,19 +659,19 @@ class Defuse extends Program{
         println(getFileContent("../ressources/ascii/logo.txt"));
         println();
         println();
-        println("Bienvenue dans le jeu Defuse !");
+        printlnSlow("Bienvenue dans le jeu Defuse !");
         println();
-        println("Votre mission est de désamorcer une bombe avant qu'elle n'explose.");
-        println("Pour cela vous devrez résoudre chaque module de la bombe.");
-        println("Chaque module est différent, vous devrez donc trouver la bonne méthode pour le désamorcer.");
-        println("Pour votre mission vous aurez un manuel d'utilisation de la bombe.");
-        println("Il vous sera utile pour résoudre les modules sans faire d'erreur.");
-        println("Cependant la bombe est instable, si vous faite 3 erreurs, la bombe explosera.");
+        printlnSlow("Votre mission est de désamorcer une bombe avant qu'elle n'explose.");
+        printlnSlow("Pour cela vous devrez résoudre chaque module de la bombe.");
+        printlnSlow("Chaque module est différent, vous devrez donc trouver la bonne méthode pour le désamorcer.");
+        printlnSlow("Pour votre mission vous aurez un manuel d'utilisation de la bombe.");
+        printlnSlow("Il vous sera utile pour résoudre les modules sans faire d'erreur.");
+        printlnSlow("Cependant la bombe est instable, si vous faite 3 erreurs, la bombe explosera.");
         println();
-        println("Bonne chance !");
+        printlnSlow("Bonne chance !");
         println();
         println();
-        print("Pour commencer entrez votre nom d'agent: ");
+        printSlow("Pour commencer entrez votre nom d'agent: ");
         return validPseudo(readString());
     }
 
@@ -643,13 +681,13 @@ class Defuse extends Program{
         println(getFileContent("../ressources/ascii/logo.txt"));
         println();
         println();
-        println("1 - Lancez le Jeu");
-        println("2 - Tableau des Scores");
-        println("3 - Parametres & Debugage");
-        println("4 - Quitter");
+        printlnSlow("1 - Lancez le Jeu");
+        printlnSlow("2 - Tableau des Scores");
+        printlnSlow("3 - Parametres & Debugage");
+        printlnSlow("4 - Quitter");
         println();
         println();
-        print("Que voulez-vous faire ? ");
+        printSlow("Que voulez-vous faire ? ");
         return getAnswer(new String[]{"1", "2", "3", "4"});
     }
 
@@ -660,20 +698,21 @@ class Defuse extends Program{
         println(getFileContent("../ressources/ascii/logo.txt"));
         println();
         println();
-        println("0 - Retour");
-        println("1 - Réinitialiser les Scores");
-        println("2 - Réinitialiser les Parametres");
-        println("3 - Test de Debugage");
-        println("4 - Ajouter un Score");
+        printlnSlow("0 - Retour");
+        printlnSlow("1 - Réinitialiser les Scores");
+        printlnSlow("2 - Réinitialiser les Parametres");
+        printlnSlow("3 - Test de Debugage");
+        printlnSlow("4 - Ajouter un Score");
         if (equals(settings[0][1], "true")){
-            println("5 - Désactiver le Mode Triche");
+            printlnSlow("5 - Désactiver le Mode Triche");
         } else {
-            println("5 - Activer le Mode Triche");
+            printlnSlow("5 - Activer le Mode Triche");
         }
+        printlnSlow("6 - Vitesse du Text : " + settings[3][1]);
         println();
         println();
-        print("Que voulez-vous faire ? ");
-        return getAnswer(new String[]{"0", "1", "2", "3", "4", "5"});
+        printSlow("Que voulez-vous faire ? ");
+        return getAnswer(new String[]{"0", "1", "2", "3", "4", "5", "6"});
     }
 
     // Fonction permettant d'afficher le tableau des scores
@@ -681,7 +720,7 @@ class Defuse extends Program{
         System.out.print("\033[H\033[2J");
         println();
         println();
-        println("Voici le tableau des scores:");
+        printlnSlow("Voici le tableau des scores:");
         println();
         println();
         String[][] scoresboard = csvToTable("../ressources/csv/scoresboard.csv");
@@ -724,12 +763,12 @@ class Defuse extends Program{
         println(getFileContent("../ressources/ascii/death.txt"));
         println();
         println();
-        println("La bombe a explosé, vous avez perdu !");
+        printlnSlow("La bombe a explosé, vous avez perdu !");
         println();
-        println("Statistiques:");
-        println("Modue Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
-        println("Temps: " + game.player.time.getTimeSecs() + " secondes");
-        println("Score: " + game.player.score);
+        printlnSlow("Statistiques:");
+        printlnSlow("Modue Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
+        printlnSlow("Temps: " + game.player.time.getTimeSecs() + " secondes");
+        printlnSlow("Score: " + game.player.score);
         println();
         println();
         pressEnterToContinue("tableau des scores");
@@ -741,12 +780,12 @@ class Defuse extends Program{
         println(getFileContent("../ressources/ascii/defuse.txt"));
         println();
         println();
-        println("La bombe a été désamorcée, vous avez gagné !");
+        printlnSlow("La bombe a été désamorcée, vous avez gagné !");
         println();
-        println("Statistiques:");
-        println("Erreur: " + game.player.errors);
-        println("Temps: " + game.player.time.getTimeSecs() + " secondes");
-        println("Score: " + game.player.score);
+        printlnSlow("Statistiques:");
+        printlnSlow("Erreur: " + game.player.errors);
+        printlnSlow("Temps: " + game.player.time.getTimeSecs() + " secondes");
+        printlnSlow("Score: " + game.player.score);
         println();
         println();
         pressEnterToContinue("tableau des scores");
@@ -766,28 +805,32 @@ class Defuse extends Program{
                 quit = true;
             } else if (id == 1){
                 resetScoresBoard();
-                println("Réinitialisation des Scores: OK");
+                printlnSlow("Réinitialisation des Scores: OK");
                 delay(2000);
             } else if (id == 2){
                 resetSettings();
-                println("Réinitialisation des Parametres: OK");
+                printlnSlow("Réinitialisation des Parametres: OK");
                 delay(2000);
             } else if (id == 3){
                 debugageTest();
             } else if (id == 4){
-                println("Nom du joueur : ");
+                printlnSlow("Nom du joueur : ");
                 String name = validPseudo(readString());
-                println("Score : ");
+                printlnSlow("Score : ");
                 int score = readInt();
                 addScore(name, score);
                 scoresboard();
             } else if (id == 5){
-                String[][] settings = csvToTable("../ressources/csv/settings.csv");
                 if (equals(settings[0][1], "true")){
                     settings[0][1] = "false";
                 } else {
                     settings[0][1] = "true";
                 }
+                saveCSV(settings, "../ressources/csv/settings.csv");
+            } else if (id == 6){
+                printlnSlow("Vitesse du Text : (0 = instantané)");
+                settings[3][1] = onlyInt(readString());
+                slowSpeed = stringToNumber(settings[3][1]);
                 saveCSV(settings, "../ressources/csv/settings.csv");
             }
         }
@@ -856,9 +899,9 @@ class Defuse extends Program{
         for (int i = 0; i < 3; i++){
             for (int j = 0; j < length(cable.cables); j++){
                 if (!cable.cables[j].cut){
-                    print("  | |");
+                    printSlow("  | |");
                 } else{
-                    print("  / /");
+                    printSlow("  / /");
                 }
             }
             println();
@@ -867,31 +910,32 @@ class Defuse extends Program{
             println(repeatString(length(cable.cables), "  | |"));
         }
         println();
-        print(" ");
+        printSlow(" ");
         for (int i = 0; i < length(cable.cables); i++){
-            print(" [" + cable.cables[i].color + "] ");
+            printSlow(" [" + cable.cables[i].color + "] ");
         }
         println();
-        print(" ");
+        printSlow(" ");
         for (int i = 0; i < length(cable.cables); i++){
-            print(" [" + (i + 1) + "] ");
+            printSlow(" [" + (i + 1) + "] ");
         }
     }
 
     void cutCable(Game game){
-        println("Quel cable couper ?");
+        printlnSlow("Quel cable couper ?");
         String[] answers = new String[length(game.bombe.modules[game.bombe.focusModule - 1].cables)];
         for (int i = 0; i < length(game.bombe.modules[game.bombe.focusModule - 1].cables); i++){
             answers[i] = "" + (i + 1);
         }
         int id = getAnswer(answers);
         if (game.bombe.modules[game.bombe.focusModule - 1].cables[id - 1].cut){
-            println("Ce cable est deja coupé !");
+            printlnSlow("Ce cable est deja coupé !");
             delay(1000);
             cutCable(game);
         } else {
-            Module moduleTemp = game.bombe.modules[game.bombe.focusModule - 1]
+            Module moduleTemp = game.bombe.modules[game.bombe.focusModule - 1];
             int nbRed, nbBlue, nbGreen, nbYellow, nbBlack;
+            nbRed = nbBlue = nbGreen = nbYellow = nbBlack = 0;
             int nbCable = length(moduleTemp.cables);
             for (int i = 0; i < nbCable; i++){
                 if (moduleTemp.cables[i].color == 'R'){
@@ -909,17 +953,17 @@ class Defuse extends Program{
             moduleTemp.cables[id - 1].cut = true;
             if (moduleTemp.cables[id - 1].color == 'B' && nbRed > 2){
                 sucessModule(game, "Bravo, vous avez réussi le module Cable !");
-            } else if (moduleTemp.cables[id - 1] == nbCable && nbRed == 0){
+            } else if (id == nbCable && nbRed == 0){
                 sucessModule(game, "Bravo, vous avez réussi le module Cable !");
-            } else if (moduleTemp.cables[id - 1] == 1 && moduleTemp.cables[id - 1].color == 'V'){
+            } else if (id == 1 && moduleTemp.cables[id - 1].color == 'V'){
                 sucessModule(game, "Bravo, vous avez réussi le module Cable !");
-            } else if (moduleTemp.cables[id - 1] == nbCable && moduleTemp.cables[id - 1].color == 'B'){
+            } else if (id == nbCable && moduleTemp.cables[id - 1].color == 'B'){
                 sucessModule(game, "Bravo, vous avez réussi le module Cable !");
             } else if (moduleTemp.cables[id - 1].color == 'R' && nbRed > 1){
                 sucessModule(game, "Bravo, vous avez réussi le module Cable !");
             } else if (nbRed > 5 || nbBlack > 5 || nbGreen > 5 || nbBlue > 5 || nbYellow > 5){
                 sucessModule(game, "Bravo, vous avez réussi le module Cable !");
-            } else if (nbRed > >= || nbBlack > >= || nbGreen > >= || nbBlue > >= || nbYellow >= 1){
+            } else if (nbRed >= 1 || nbBlack >= 1 || nbGreen >= 1 || nbBlue >= 1 || nbYellow >= 1){
                 sucessModule(game, "Bravo, vous avez réussi le module Cable !");
             } else {
                 addError(game, "Malheureusement, ce n'est pas le bon cable !");
@@ -949,7 +993,7 @@ class Defuse extends Program{
         if (game.cheat){
             println(game.bombe.modules[game.bombe.focusModule - 1].morse.world);
         }
-        print("Entrer le mot de passe : ");
+        printSlow("Entrer le mot de passe : ");
         String word = stringLower(onlyLetter(readString()));
         if (equals(word, game.bombe.modules[game.bombe.focusModule - 1].morse.world)){
             sucessModule(game, "Mot de Passe Corect !");
@@ -1001,7 +1045,7 @@ class Defuse extends Program{
         if (game.cheat){
             println(game.bombe.modules[game.bombe.focusModule - 1].ip.ipAnswer);
         }
-        print("Entrer l'ip du Serveur : ");
+        printSlow("Entrer l'ip du Serveur : ");
         String ip = readString();
         if (equals(ip, game.bombe.modules[game.bombe.focusModule - 1].ip.ipAnswer)){
             sucessModule(game, "IP Serveur Corect !");
@@ -1020,21 +1064,21 @@ class Defuse extends Program{
         System.out.print("\033[H\033[2J");
         println();
         println();
-        println("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
+        printlnSlow("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
         println();
-        println("0 : Quitter");
+        printlnSlow("0 : Quitter");
         for (int i = 0; i < game.bombe.nbModules; i++){
-            println("Module n°" + (i + 1) + " : " + centerString(game.bombe.modules[i].name, 20) + " : " + getModuleState(game.bombe.modules[i].resolved));
+            printlnSlow("Module n°" + (i + 1) + " : " + centerString(game.bombe.modules[i].name, 20) + " : " + getModuleState(game.bombe.modules[i].resolved));
         }
         println();
-        println("Quel module voulez vous resoudre ?");
+        printlnSlow("Quel module voulez vous resoudre ?");
         String[] answers = new String[game.bombe.nbModules+1];
         for (int i = 0; i <= game.bombe.nbModules; i++){
             answers[i] = "" + i;
         }
         int id = getAnswer(answers);
         if (id != 0 && game.bombe.modules[id - 1].resolved){
-            println("Ce module est deja resolu !");
+            printlnSlow("Ce module est deja resolu !");
             delay(1000);
             return selectModule(game);
         }
@@ -1051,69 +1095,69 @@ class Defuse extends Program{
 
     void playInterface(Game game){
         System.out.print("\033[H\033[2J");
-        println("// -- // -- // -- // -- // -- // -- // -- //");
+        printlnSlow("// -- // -- // -- // -- // -- // -- // -- //");
         println();
         println(centerString("Bombe", 44));
         println();
         println();
-        println("Erreur: " + game.player.errors + " / 3");
-        println("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
-        println("Score: " + clamp((game.player.score + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints));
-        println("Temps: " + game.player.time.getTimeSecs() + " secondes");
+        printlnSlow("Erreur: " + game.player.errors + " / 3");
+        printlnSlow("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
+        printlnSlow("Score: " + clamp((game.player.score + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints));
+        printlnSlow("Temps: " + game.player.time.getTimeSecs() + " secondes");
         println();
         if (game.bombe.focusModule == 0){
             for (int i = 0; i < game.bombe.nbModules; i++){
-                println("Module n°" + (i + 1) + " : " + centerString(game.bombe.modules[i].name, 20) + " : " + getModuleState(game.bombe.modules[i].resolved));
+                printlnSlow("Module n°" + (i + 1) + " : " + centerString(game.bombe.modules[i].name, 20) + " : " + getModuleState(game.bombe.modules[i].resolved));
             }
         } else {
             println();
-            println("// -- // -- // -- // -- // -- // -- // -- //");
+            printlnSlow("// -- // -- // -- // -- // -- // -- // -- //");
             println();
             println(centerString("Module : " + game.bombe.modules[game.bombe.focusModule - 1].name, 44));
             println();
             println();
             if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Fils")) {
-                println("Trouver le bon fil a coupé !");
+                printlnSlow("Trouver le bon fil a coupé !");
                 println();
                 showCable(game.bombe.modules[game.bombe.focusModule - 1]);
             } else if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Binaire")){
-                println("Trouver l'ip de ce serveur : " + game.bombe.modules[game.bombe.focusModule - 1].ip.ipBinaryShow);
+                printlnSlow("Trouver l'ip de ce serveur : " + game.bombe.modules[game.bombe.focusModule - 1].ip.ipBinaryShow);
             } else if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Morse")){
-                println("Trouver me mot secret : " + game.bombe.modules[game.bombe.focusModule - 1].morse.morse);
+                printlnSlow("Trouver me mot secret : " + game.bombe.modules[game.bombe.focusModule - 1].morse.morse);
             }
         }
         println();
         println();
-        println("// -- // -- // -- // -- // -- // -- // -- //");
+        printlnSlow("// -- // -- // -- // -- // -- // -- // -- //");
         println();
         println(centerString("Manuel - Page " + game.manual.page, 44));
         println();
         println();
         println(getFileContent("../ressources/manual/" + game.manual.page + ".txt"));
         println();
-        println("// -- // -- // -- // -- // -- // -- // -- //");
+        printlnSlow("// -- // -- // -- // -- // -- // -- // -- //");
         println();
         println(centerString("Que voulez-vous faire ?", 44));
         println();
         println();
-        println("0. Quitte la partie");
-        println("1. Manuel - Page Suivante");
-        println("2. Manuel - Page Précédente");
+        printlnSlow("0. Quitte la partie");
+        printlnSlow("1. Manuel - Page Suivante");
+        printlnSlow("2. Manuel - Page Précédente");
         if (game.bombe.focusModule == 0){
-            println("3. Bombe - Résoudre un Module");
+            printlnSlow("3. Bombe - Résoudre un Module");
         } else {
-            println("3. Bombe - Retour a la Bombe");
+            printlnSlow("3. Bombe - Retour a la Bombe");
         }
         if (game.bombe.focusModule != 0 && equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Fils")){
-            println("4. Module - Couper un Cable");
+            printlnSlow("4. Module - Couper un Cable");
         } else if (game.bombe.focusModule != 0 && equals(game.bombe.modules[game.bombe.focusModule -1].name, "Binaire")){
-            println("4. Module - Entrer l'ip du Serveur");
+            printlnSlow("4. Module - Entrer l'ip du Serveur");
         } else if (game.bombe.focusModule != 0 && equals(game.bombe.modules[game.bombe.focusModule -1].name, "Morse")){
-            println("4. Module - Entrer le mot secret");
+            printlnSlow("4. Module - Entrer le mot secret");
         }
         println();
         println();
-        print("Votre choix: ");
+        printSlow("Votre choix: ");
         String[] answers = new String[]{"0", "1", "2", "3"};
         if (game.bombe.focusModule != 0){
             answers = new String[]{"0", "1", "2", "3", "4"};
@@ -1139,7 +1183,6 @@ class Defuse extends Program{
     }
 
     void play(){
-        String[][] settings = csvToTable("../ressources/csv/settings.csv");
         Game game = new Game();
         game.cheat = equals(settings[0][1], "true");
         game.maxPoints = stringToNumber(settings[1][1]);
