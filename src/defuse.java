@@ -80,11 +80,18 @@ class IPAddress{
     String ipBinaryShow = "0000 0000 | 0000 0000 | 0000 0000 | 0000 0000";
 }
 
+class Morse{
+    String world = "Secret";
+    String morse = ".... . .-.. .-.. ---";
+}
+
 class Module{
     String name = "Module Sans Nom";
     boolean resolved = false;
     Cable[] cables = new Cable[5];
+    int points = 1500;
     IPAddress ip = new IPAddress();
+    Morse morse = new Morse();
 }
 
 class Bombe{
@@ -112,6 +119,7 @@ class Game{
     Manual manual = new Manual();
     boolean quit = false;
     boolean cheat = false;
+    int maxPoints = 10000;
 }
 
 class Defuse extends Program{
@@ -123,17 +131,17 @@ class Defuse extends Program{
 
     // Fonction permettant d'enregistre dans un fichier debug
     void saveDebug(String[] content){
-        saveCSV(new String[][]{content}, "../ressources/debug.csv");
+        saveCSV(new String[][]{content}, "../ressources/test/debug.csv");
     }
 
     // Fonction permettant d'enregistre dans un fichier debug
     void saveDebug(String content){
-        saveCSV(new String[][]{{content}}, "../ressources/debug.csv");
+        saveCSV(new String[][]{{content}}, "../ressources/test/debug.csv");
     }
 
     // Fonction permettant d'enregistre dans un fichier debug
     void saveDebug(String[][] content){
-        saveCSV(content, "../ressources/debug.csv");
+        saveCSV(content, "../ressources/test/debug.csv");
     }
 
     // Fonction permettant d'afficher un tableau de String
@@ -155,16 +163,6 @@ class Defuse extends Program{
             }
         }
         return newText;
-    }
-
-    // Fonction permettant de convertir du morse en "string"
-    String morseToString(String morse){
-        String[] morseTable = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
-        String[] morseTableMorse = {".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--..", ".----", "..---", "...--", "....-", ".....", "-....", "--...", "---..", "----.", "-----"};
-        for (int i = 0; i < length(morseTableMorse, 1); i++){
-            morse = replace(morse, morseTableMorse[i], morseTable[i]);
-        }
-        return morse;
     }
 
     // Fonction permettant de convertir un nombre en binaire (String)
@@ -286,6 +284,27 @@ class Defuse extends Program{
         return c1 == c2;
     }
 
+    // Fonction permettant de nettoyer une chaine de caractère
+    String onlyLetter(String str){
+        String newStr = "";
+        for (int i = 0; i < length(str); i++){
+            if ((str.charAt(i) >= 'a' && str.charAt(i) <= 'z') || (str.charAt(i) >= 'A' && str.charAt(i) <= 'Z')){
+                newStr += str.charAt(i);
+            }
+        }
+        return newStr;
+    }
+
+    // Fonction permettant de récupérer l'index d'une valeur dans une table
+    int indexOfString(String[] table, String value){
+        for (int i = 0; i < length(table, 1); i++){
+            if (equals(table[i], value)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
     // Fonction permettant de créer un String de n fois s
     String repeatString(int n, String s){
         String str = "";
@@ -313,16 +332,6 @@ class Defuse extends Program{
                 return repeatChar((int)half + 1, ' ') + str + repeatChar((int)half , ' ');
             }
         }
-    }
-
-    // Fonction permettant de récupérer l'index d'une valeur dans une table
-    int indexOfString(String[] table, String value){
-        for (int i = 0; i < length(table, 1); i++){
-            if (equals(table[i], value)){
-                return i;
-            }
-        }
-        return -1;
     }
 
     // Fonction permettant de récupérer le contenu d'un fichier txt
@@ -361,6 +370,10 @@ class Defuse extends Program{
 
     int randomInt(int min, int max){
         return (int)(random() * (max - min + 1) + min);
+    }
+
+    String randomTable(String[] table){
+        return table[randomInt(0, length(table) - 1)];
     }
 
     // Fonction permettant de récupérer un fichier aléatoire dans un dossier
@@ -428,14 +441,6 @@ class Defuse extends Program{
             saveCSV(scoresboard, "../ressources/csv/scoresboard.csv");
         }
     }
-
-    // void debug(){
-    //     boolean fin = false;
-    //     while (!fin){
-    //         String answer = readString();
-    //         if (equals(answer, "add_score"))
-    //     }
-    // }
 
     // Fonction permettant de mettre une chaine de caractère en minuscule
     String stringLower(String str){
@@ -658,6 +663,7 @@ class Defuse extends Program{
         println(getFileContent("../ressources/ascii/logo.txt"));
         println();
         println();
+        println("0 - Retour");
         println("1 - Réinitialiser les Scores");
         println("2 - Réinitialiser les Parametres");
         println("3 - Test de Debugage");
@@ -667,11 +673,10 @@ class Defuse extends Program{
         } else {
             println("5 - Activer le Mode Triche");
         }
-        println("6 - Retour");
         println();
         println();
         print("Que voulez-vous faire ? ");
-        return getAnswer(new String[]{"1", "2", "3", "4", "5"});
+        return getAnswer(new String[]{"0", "1", "2", "3", "4", "5"});
     }
 
     // Fonction permettant d'afficher le tableau des scores
@@ -750,51 +755,6 @@ class Defuse extends Program{
         pressEnterToContinue("tableau des scores");
     }
 
-    void wait(String msg, int time){
-        System.out.print("\033[H\033[2J");
-        println();
-        println();
-        print(msg);
-        StopWatch timer = new StopWatch();
-        timer.start();
-        delay(time * 1000);
-    }
-
-    String ipToString(int[] ip){
-        String str = "";
-        for (int i = 0; i < length(ip); i++){
-            str += ip[i];
-            if (i != length(ip) - 1){
-                str += ".";
-            }
-        }
-        return str;
-    }
-
-    String[] ipBinary(int[] ip){
-        String[] ipBinary = new String[length(ip)];
-        for (int i = 0; i < length(ip); i++){
-            ipBinary[i] = numberToBinary(ip[i]);
-        }
-        return ipBinary;
-    }
-
-    String ipBinaryToString(String[] ipBinary){
-        String str = "";
-        for (int i = 0; i < length(ipBinary); i++){
-            if (ipBinary[i] == null && i == 0){
-                str += "0000 0000";
-            } else if (ipBinary[i] == null){
-                str += " 0000 0000";
-            } else if (i == 0){
-                str += substring(ipBinary[i], 0, 4) + " " + substring(ipBinary[i], 4, 8);
-            } else {
-                str += " | " + substring(ipBinary[i], 0, 4) + " " + substring(ipBinary[i], 4, 8);
-            }
-        }
-        return str;
-    }
-
     // -- // -- // -- // -- // -- // -- // -- //
     //                                        //
     //            Fonctions Menu              //
@@ -805,12 +765,16 @@ class Defuse extends Program{
         boolean quit = false;
         while (!quit){
             int id = parameterMenu();
-            if (id == 1){
+            if (id == 0){
+                quit = true;
+            } else if (id == 1){
                 resetScoresBoard();
-                wait("Réinitialisation des Scores: OK", 2);
+                println("Réinitialisation des Scores: OK");
+                delay(2000);
             } else if (id == 2){
                 resetSettings();
-                wait("Réinitialisation des Parametres: OK", 2);
+                println("Réinitialisation des Parametres: OK");
+                delay(2000);
             } else if (id == 3){
                 debugageTest();
             } else if (id == 4){
@@ -828,8 +792,6 @@ class Defuse extends Program{
                     settings[0][1] = "true";
                 }
                 saveCSV(settings, "../ressources/csv/settings.csv");
-            }else if (id == 6){
-                quit = true;
             }
         }
     }
@@ -840,20 +802,32 @@ class Defuse extends Program{
     //                                        //
     // -- // -- // -- // -- // -- // -- // -- //
 
+    // Fonction permettant de créer les modules de la bombe
     void initModules(Game game){
         for (int i = 0; i < game.bombe.nbModules; i++){
             String[][] moduleInfo = csvToTable("../ressources/modules/" + getRandomFile("../ressources/modules"));
             game.bombe.modules[i] = new Module();
             game.bombe.modules[i].name = moduleInfo[0][1];
-            println(game.bombe.modules[i].name);
+            game.bombe.modules[i].points = stringToNumber(moduleInfo[1][1]);
             if (equals(game.bombe.modules[i].name, "Binaire")){
                 game.bombe.modules[i].ip.ip = new int[]{randomInt(0, 255), randomInt(0, 255), randomInt(0, 255), randomInt(0, 255)};
                 game.bombe.modules[i].ip.ipAnswer = ipToString(game.bombe.modules[i].ip.ip);
                 game.bombe.modules[i].ip.ipBinary = ipBinary(game.bombe.modules[i].ip.ip);
                 game.bombe.modules[i].ip.ipBinaryShow = ipBinaryToString(game.bombe.modules[i].ip.ipBinary);
+            } else if (equals(game.bombe.modules[i].name, "Morse")){
+                String[] words = new String[length(moduleInfo) - 2];
+                for (int j = 0; j < length(words); j++){
+                    words[j] = moduleInfo[j + 2][1];
+                }
+                game.bombe.modules[i].morse.world = randomTable(words);
+                game.bombe.modules[i].morse.morse = stringToMorse(game.bombe.modules[i].morse.world);
             }
         }
     }
+
+    // -- // -- // -- // -- //
+    // Fonctions du Cable
+    // -- // -- // -- // -- //
 
     void showCable(Module cable){
         for (int i = 0; i < 4; i++){
@@ -920,6 +894,102 @@ class Defuse extends Program{
         return false;
     }
 
+    // -- // -- // -- // -- //
+    // Fonctions du Module Morse
+    // -- // -- // -- // -- //
+
+    String stringToMorse(String str){
+        str = stringLower(onlyLetter(str));
+        String morse = "";
+        String[] morseTable = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"};
+        String[] morseTableMorse = {".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--.."};
+        for (int i = 0; i < length(str); i++){
+            String letter = "" + charAt(str, i);
+            int idx = indexOfString(morseTable, letter);
+            morse += " " + morseTableMorse[idx];
+        }
+        return morse;
+    }
+
+    void enterWord(Game game){
+        if (game.cheat){
+            println(game.bombe.modules[game.bombe.focusModule - 1].morse.world);
+        }
+        print("Entrer le mot de passe : ");
+        String word = readString();
+        if (equals(word, game.bombe.modules[game.bombe.focusModule - 1].morse.world)){
+            game.bombe.modules[game.bombe.focusModule - 1].resolved = true;
+            game.bombe.nbModulesResolve++;
+            game.player.score += game.bombe.modules[game.bombe.focusModule - 1].points;
+            println("Mot de Passe Corect !");
+            delay(2000);
+            game.bombe.focusModule = 0;
+        } else {
+            game.player.errors++;
+            println("Mot de Passe Incorect !");
+            delay(2000);
+        }
+    }
+
+    // -- // -- // -- // -- //
+    // Fonctions du Module Binaire
+    // -- // -- // -- // -- //
+
+    String ipToString(int[] ip){
+        String str = "";
+        for (int i = 0; i < length(ip); i++){
+            str += ip[i];
+            if (i != length(ip) - 1){
+                str += ".";
+            }
+        }
+        return str;
+    }
+
+    String[] ipBinary(int[] ip){
+        String[] ipBinary = new String[length(ip)];
+        for (int i = 0; i < length(ip); i++){
+            ipBinary[i] = numberToBinary(ip[i]);
+        }
+        return ipBinary;
+    }
+
+    String ipBinaryToString(String[] ipBinary){
+        String str = "";
+        for (int i = 0; i < length(ipBinary); i++){
+            if (ipBinary[i] == null && i == 0){
+                str += "0000 0000";
+            } else if (ipBinary[i] == null){
+                str += " 0000 0000";
+            } else if (i == 0){
+                str += substring(ipBinary[i], 0, 4) + " " + substring(ipBinary[i], 4, 8);
+            } else {
+                str += " | " + substring(ipBinary[i], 0, 4) + " " + substring(ipBinary[i], 4, 8);
+            }
+        }
+        return str;
+    }
+
+    void enterIP(Game game){
+        if (game.cheat){
+            println(game.bombe.modules[game.bombe.focusModule - 1].ip.ipAnswer);
+        }
+        print("Entrer l'ip du Serveur : ");
+        String ip = readString();
+        if (equals(ip, game.bombe.modules[game.bombe.focusModule - 1].ip.ipAnswer)){
+            game.bombe.modules[game.bombe.focusModule - 1].resolved = true;
+            game.bombe.nbModulesResolve++;
+            game.player.score += game.bombe.modules[game.bombe.focusModule - 1].points;
+            println("IP Serveur Valide !");
+            delay(2000);
+            game.bombe.focusModule = 0;
+        } else {
+            game.player.errors++;
+            println("IP Serveur Invalid !");
+            delay(2000);
+        }
+    }
+
     // -- // -- // -- // -- // -- // -- // -- //
     //                                        //
     //           Corps du Programme           //
@@ -932,17 +1002,18 @@ class Defuse extends Program{
         println();
         println("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
         println();
+        println("0 : Quitter");
         for (int i = 0; i < game.bombe.nbModules; i++){
             println("Module n°" + (i + 1) + " : " + centerString(game.bombe.modules[i].name, 20) + " : " + getModuleState(game.bombe.modules[i].resolved));
         }
         println();
         println("Quel module voulez vous resoudre ?");
-        String[] answers = new String[game.bombe.nbModules];
-        for (int i = 0; i < game.bombe.nbModules; i++){
-            answers[i] = "" + (i + 1);
+        String[] answers = new String[game.bombe.nbModules+1];
+        for (int i = 0; i <= game.bombe.nbModules; i++){
+            answers[i] = "" + i;
         }
         int id = getAnswer(answers);
-        if (game.bombe.modules[id - 1].resolved){
+        if (id != 0 && game.bombe.modules[id - 1].resolved){
             println("Ce module est deja resolu !");
             delay(1000);
             return selectModule(game);
@@ -967,7 +1038,8 @@ class Defuse extends Program{
         println();
         println("Erreur: " + game.player.errors + " / 3");
         println("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
-        println("Score: " + clamp(((game.player.score - game.player.errors * 750) + ((int) game.player.time.getTimeSecs() * -2)), 0, 100000));
+        println("Score: " + clamp(((game.player.score - game.player.errors * 350) + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints));
+        println("Temps: " + game.player.time.getTimeSecs() + " secondes");
         println();
         if (game.bombe.focusModule == 0){
             for (int i = 0; i < game.bombe.nbModules; i++){
@@ -990,6 +1062,8 @@ class Defuse extends Program{
                 //cutCable(cable);
             } else if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Binaire")){
                 println("Trouver l'ip de ce serveur : " + game.bombe.modules[game.bombe.focusModule - 1].ip.ipBinaryShow);
+            } else if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Morse")){
+                println("Trouver me mot secret : " + game.bombe.modules[game.bombe.focusModule - 1].morse.morse);
             }
         }
         println();
@@ -1018,6 +1092,8 @@ class Defuse extends Program{
             println("4. Module - Couper un Cable");
         } else if (game.bombe.focusModule != 0 && equals(game.bombe.modules[game.bombe.focusModule -1].name, "Binaire")){
             println("4. Module - Entrer l'ip du Serveur");
+        } else if (game.bombe.focusModule != 0 && equals(game.bombe.modules[game.bombe.focusModule -1].name, "Morse")){
+            println("4. Module - Entrer le mot secret");
         }
         println();
         println();
@@ -1041,23 +1117,9 @@ class Defuse extends Program{
             Module cable = game.bombe.modules[game.bombe.focusModule];
             cutCable(cable);
         } else if (choice == 4 && equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Binaire")){
-            println("Entrer l'ip du Serveur : ");
-            if (game.cheat){
-                println(game.bombe.modules[game.bombe.focusModule - 1].ip.ipAnswer);
-            }
-            String ip = readString();
-            if (equals(ip, game.bombe.modules[game.bombe.focusModule - 1].ip.ipAnswer)){
-                game.bombe.modules[game.bombe.focusModule - 1].resolved = true;
-                game.bombe.nbModulesResolve++;
-                game.player.score += 2500;
-                println("IP Serveur Valide !");
-                delay(2000);
-                game.bombe.focusModule = 0;
-            } else {
-                game.player.errors++;
-                println("IP Serveur Invalid !");
-                delay(2000);
-            }
+            enterIP(game);
+        } else if (choice == 4 && equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Morse")){
+            enterWord(game);
         }
     }
 
@@ -1069,14 +1131,15 @@ class Defuse extends Program{
         initModules(game);
         String[][] settings = csvToTable("../ressources/csv/settings.csv");
         game.cheat = equals(settings[0][1], "true");
+        game.maxPoints = stringToNumber(settings[1][1]);
         System.out.print("\033[H\033[2J");
         while (game.player.errors < 3 && game.bombe.nbModulesResolve != game.bombe.nbModules && !game.quit){
             playInterface(game);
         }
-        addScore(game.player.name, clamp(((game.player.score - game.player.errors * 750) + ((int) game.player.time.getTimeSecs() * -2)), 0, 100000));
+        addScore(game.player.name, clamp(((game.player.score - game.player.errors * 350) + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints));
         game.player.time.stop();
         if (!game.quit){
-            if (game.bombe.nbModulesResolve != game.bombe.nbModules){
+            if (game.bombe.nbModulesResolve == game.bombe.nbModules){
                 defuseScreen(game);
             } else {
                 deathScreen(game);
@@ -1087,6 +1150,7 @@ class Defuse extends Program{
 
     // Corps du programme
     void algorithm(){
+        // println(stringToMorse("bonjour"));
         boolean fini = false;
         while (!fini){
             int id = mainMenu();

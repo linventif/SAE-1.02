@@ -6,7 +6,7 @@ Auteur: [Linventif](https://github.com/linventif)
 
 Date de création: 2022-12-12
 
-Version: beta
+Version: 0.1.0
 
 ## Description
 
