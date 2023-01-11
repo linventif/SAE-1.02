@@ -4,16 +4,17 @@
 //                                        //
 // -- // -- // -- // -- // -- // -- // -- //
 //                                        //
-// Ligne 001 : Sommaire                   //
-// Ligne 020 : Import des Librairies      //
-// Ligne 030 : Classes                    //
-// Ligne 020 : Fonctions de Debug         //
-// Ligne 050 : Fonctions Primaires        //
-// Ligne 200 : Fonctions Secondaires      //
-// Ligne 250 : Fonctions de Test          //
-// Ligne 350 : Fonctions d'Affichage      //
-// Ligne 500 : Fonctions des Menu         //
-// Ligne 600 : Corps du Programme         //
+// Ligne 0001 : Sommaire                  //
+// Ligne 0020 : Import des Librairies     //
+// Ligne 0030 : Classes                   //
+// Ligne 0130 : Fonctions de Debug        //
+// Ligne 0250 : Fonctions Primaires       //
+// Ligne 0420 : Fonctions Secondaires     //
+// Ligne 0540 : Fonctions de Test         //
+// Ligne 0650 : Fonctions d'Affichage     //
+// Ligne 0800 : Fonctions des Menu        //
+// Ligne 0840 : Fonctions des Modules     //
+// Ligne 1060 : Corps du Programme        //
 //                                        //
 // -- // -- // -- // -- // -- // -- // -- //
 //                                        //
@@ -240,6 +241,13 @@ class Defuse extends Program{
         }
     }
 
+    // -- // -- // -- // -- // -- // -- // -- //
+    //                                        //
+    //            Fonctions Primaires         //
+    //                                        //
+    // -- // -- // -- // -- // -- // -- // -- //
+
+    // Fonction permettant de limiter une valeur entre 2 bornes
     int clamp(int value, int min, int max){
         //saveDebug(new String[]{"clamp", ""+value, ""+min, ""+max});
         if (value < min){
@@ -252,12 +260,6 @@ class Defuse extends Program{
             return value;
         }
     }
-
-    // -- // -- // -- // -- // -- // -- // -- //
-    //                                        //
-    //            Fonctions Primaires         //
-    //                                        //
-    // -- // -- // -- // -- // -- // -- // -- //
 
     // Fonction permettant de verifier si une table contient une valeur
     boolean containsString(String[] table, String value){
@@ -764,7 +766,7 @@ class Defuse extends Program{
         printlnSlow("Statistiques:");
         printlnSlow("Modue Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
         printlnSlow("Temps: " + game.player.time.getTimeSecs() + " secondes");
-        printlnSlow("Score: " + game.player.score);
+        printlnSlow("Score: " + clamp((game.player.score + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints)));
         println();
         println();
         pressEnterToContinue("tableau des scores");
@@ -781,7 +783,7 @@ class Defuse extends Program{
         printlnSlow("Statistiques:");
         printlnSlow("Erreur: " + game.player.errors);
         printlnSlow("Temps: " + game.player.time.getTimeSecs() + " secondes");
-        printlnSlow("Score: " + game.player.score);
+        printlnSlow("Score: " + clamp((game.player.score + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints)));
         println();
         println();
         pressEnterToContinue("tableau des scores");
