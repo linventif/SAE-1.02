@@ -1,1 +1,14 @@
-LOLO
+Instruction du Module : Binaires
+
+Votre objectif est de trouvé le code secret.
+
+Pour cela, il vous suffit de convertir chaque chiffre du nombre binaire en décimal.
+
+0000 0001 = 1
+0000 0010 = 2
+0000 0011 = 3
+[...]
+0000 1000 = 8
+0000 1111 = 15
+0011 0000 = 48
+1111 1111 = 255

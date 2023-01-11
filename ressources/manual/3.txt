@@ -1,0 +1,12 @@
+Instruction du Module : Morse
+
+Votre objectif est de trouver le mot de passe.
+
+Pour cela, il vous suffit de convertir chaque lettre du mot en morse.
+
+A = .-    B = -...  C = -.-.  D = -..   E = .
+F = ..-.  G = --.   H = ....  I = ..    J = .---
+K = -.-   L = .-..  M = --    N = -.    O = ---
+P = .--.  Q = --.-  R = .-.   S = ...   T = -
+U = ..-   V = ...-  W = .--   X = -..-  Y = -.--
+Z = --..

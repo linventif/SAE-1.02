@@ -141,6 +141,38 @@ class Defuse extends Program{
         }
     }
 
+    String replace(String text, String old, String new_){
+        String[] textTable = new String[]{old, new_};
+        String newText = "";
+        for (int i = 0; i < length(textTable, 1); i++){
+            newText += textTable[i];
+            if (i != length(textTable, 1)-1){
+                newText += new_;
+            }
+        }
+        return newText;
+    }
+
+    // Fonction permettant de convertir du morse en "string"
+    String morseToString(String morse){
+        String[] morseTable = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"};
+        String[] morseTableMorse = {".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..", ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.", "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--..", ".----", "..---", "...--", "....-", ".....", "-....", "--...", "---..", "----.", "-----"};
+        for (int i = 0; i < length(morseTableMorse, 1); i++){
+            morse = replace(morse, morseTableMorse[i], morseTable[i]);
+        }
+        return morse;
+    }
+
+    // Fonction permettant de convertir un nombre en binaire (String)
+    String numberToBinary(int number){
+        String binary = "";
+        while (number > 0){
+            binary = (number % 2) + binary;
+            number /= 2;
+        }
+        return binary;
+    }
+
     // Fonction permettant de calculer le score d'un joueur
     int calculateScore(Player player){
         return (100 - player.errors) * (int)player.time.getTimeSecs();
@@ -436,7 +468,7 @@ class Defuse extends Program{
                 debug = true;
             }
         }
-        return indexOfString(answers, answer) + 1;
+        return stringToNumber(answer);
     }
 
     // Fonction permettant de verifier si un pseudo est valide
@@ -794,7 +826,7 @@ class Defuse extends Program{
         } else {
             cable.cables[id - 1].cut = true;
             showCable(cable);
-            println("Cable coupé !");
+            println("Fils coupé !");
             if (cable.cables[id - 1].color == 'R'){
                 println("Bravo, vous avez resolu le module !");
                 return true;
@@ -821,7 +853,23 @@ class Defuse extends Program{
     // -- // -- // -- // -- // -- // -- // -- //
 
     int selectModule(Game game) {
-        return 1;
+        println();
+        println();
+        println("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
+        println();
+        for (int i = 0; i < game.bombe.nbModules; i++){
+            println("Module n°" + (i + 1) + " : " + centerString(game.bombe.modules[i].name, 20) + " : " + getModuleState(game.bombe.modules[i].resolved));
+        }
+        println();
+        println("Quel module voulez vous resoudre ?");
+        int length = game.bombe.nbModules - game.bombe.nbModulesResolve;
+        String [] answers = new String[length];
+        for (int i = 0; i < length(game.bombe.modules); i++){
+            if (!game.bombe.modules[i].resolved){
+                answers[i] = "" + (i + 1);
+            }
+        }
+        return getAnswer(answers);
     }
 
     String getModuleState(boolean state){
@@ -846,7 +894,7 @@ class Defuse extends Program{
             for (int i = 0; i < game.bombe.nbModules; i++){
                 println("Module n°" + (i + 1) + " : " + centerString(game.bombe.modules[i].name, 20) + " : " + getModuleState(game.bombe.modules[i].resolved));
             }
-        } else {
+        } else if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Fils")){
             println();
             println("// -- // -- // -- // -- // -- // -- // -- //");
             println();
@@ -884,6 +932,9 @@ class Defuse extends Program{
         } else {
             println("3. Bombe - Retour a la Bombe");
         }
+        if (equals(game.bombe.modules[game.bombe.focusModule].name, "Fils")){
+            println("4. Bombe - Couper un Cable");
+        }
         println();
         println();
         print("Votre choix: ");
@@ -893,10 +944,12 @@ class Defuse extends Program{
         } else if (choice == 2){
             game.manual.page = clamp(game.manual.page - 1, 0, game.manual.nbPages);
         } else if (choice == 3 && game.bombe.focusModule == 0){
-            
             game.bombe.focusModule = selectModule(game);
         } else if (choice == 3 && game.bombe.focusModule != 0){
             game.bombe.focusModule = 0;
+        } else if (choice == 4 && equals(game.bombe.modules[game.bombe.focusModule].name, "Fils")){
+            Module cable = game.bombe.modules[game.bombe.focusModule];
+            cutCable(cable);
         }
     }
 
@@ -931,22 +984,23 @@ class Defuse extends Program{
 
     // Corps du programme
     void algorithm(){
-        boolean fini = false;
-        while (!fini){
-            int id = mainMenu();
-            if (id == 1){
-                play();
-            }
-            else if (id == 2){
-                scoresboard();
-            }
-            else if (id == 3){
-                parameter();
-            }
-            else if (id == 4){
-                fini = true;
-            }
-        }
+        print(morseToString(".... . .-.. .-.. --- / .-- --- .-. .-.. -.."));
+        // boolean fini = false;
+        // while (!fini){
+        //     int id = mainMenu();
+        //     if (id == 1){
+        //         play();
+        //     }
+        //     else if (id == 2){
+        //         scoresboard();
+        //     }
+        //     else if (id == 3){
+        //         parameter();
+        //     }
+        //     else if (id == 4){
+        //         fini = true;
+        //     }
+        // }
     }
 }
 
@@ -970,5 +1024,39 @@ Pour naviguer dans le manuel, utilisez les commandes
 1 - Page Suivante
 
 2 - Page Précédente
+
+Page n°1
+
+Instrunction du Module : Fils
+
+Votre objectif est de coupé le bon fil !
+
+les fil on des couleur indiquer par des lettre (r, v, b, j, o, g)
+
+Si il n'y a qu'un seul fil rouge et qu'il est au bord droit, coupé le fils vert.
+Si il n'y a au moins deux fil vert voisin, coupé le fils vert de gauche.
+Si il n'y a qu'un seul fil jaune, coupé le fils rouge.
+Si il y a plus de 3 couleur de fils, coupé le fils rouge
+Si il y a pas de fils bleu, coupé le fils jaune.
+Si il y a plus de 2 fil vert, coupé le fils orange.
+Si aucune des solution précédente n'est valid coupé le fil du millieu.
+
+Page n°2
+
+Instruction du Module : Binaires
+
+Votre objectif est de convertir le nombre binaire en décimal.
+
+Pour cela, il vous suffit de convertir chaque chiffre du nombre binaire en décimal.
+
+0000 0001 = 1
+0000 0010 = 2
+0000 0011 = 3
+[...]
+0000 1000 = 8
+0000 1111 = 15
+0011 0000 = 48
+1111 1111 = 255
+
 
 */

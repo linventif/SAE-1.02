@@ -1,6 +1,4 @@
-
-
-# Traces d'exécution textuelle
+## Traces d'exécution textuelle
 
 Au lance du jeu, une menu principale souvre et celui ci permet de:
 
@@ -12,7 +10,7 @@ Au lance du jeu, une menu principale souvre et celui ci permet de:
 
 - Quitter
 
-## Lancer une partie
+### Lancer une partie
 
 Au lancement d'une partie, le joueur a un résumé bref de sa mission lui expliquant le context et ce qu'il doit faire.
 
@@ -36,23 +34,23 @@ L'écran du joueur est divisé en 3 parties:
 |        Liste des Commandes        |
 ```
 
-## Bombe
+### Bombe
 
 La bombe et ces module sont représenté par des caractères ASCII.
 
 Les intéractiosn avec la bombe et le manuel se font par des commandes.
 
-### Commandes
+#### Commandes
 
 - tourner [direction]: tourne la bombe dans la direction [direction] (haut, bas, gauche, droite)
 
 - module [id]: affiche le module [id] et les commandes associées
 
-## Manuel
+### Manuel
 
 Le manuel est réparti en plusieurs pages, chaque page contient des informations sur un module de la bombe.
 
-### Commandes
+#### Commandes
 
 - page suivante: affiche la page suivante du manuel
 
@@ -60,7 +58,7 @@ Le manuel est réparti en plusieurs pages, chaque page contient des informations
 
 - page [id]: ouvre la page [id] du manuel
 
-## Tableau des Scores
+### Tableau des Scores
 
 Le tableau des scores est un tableau qui affiche les meilleurs scores.
 
@@ -72,19 +70,19 @@ Le tableau des scores est composé de 3 colonnes de 10 lignes:
 
 - Date
 
-### Calcul du score
+#### Calcul du score
 
 Le score est calculé en fonction du nombre d'erreur commise, de la difficulter et du temps mis pour résoudre la bombe.
 
 Equation: `((Nombre de Module Fait * 1000) * difficulté) / (1 + (temps / 60))`
 
-## Paramètres
+### Paramètres
 
 Le menu des paramètres permet de:
 
 - Changer la difficulté
 
-### Difficulté
+#### Difficulté
 
 - Facile: Valeur 1 - Modules 3
 
@@ -94,15 +92,15 @@ Le menu des paramètres permet de:
 
 Plus la difficulté est élevé, plus la bombe est complexe et le score est élevé.
 
-# Informations Techniques
+## Informations Techniques
 
-## Mocule: Coupe Fils
+### Mocule: Coupe Fils
 
-#### Description et Objectif
+##### Description et Objectif
 
 L'objectif de ce module est de coupé le bon fils parmis 5 fils, pour ce faire le joueur devera s'aider du manuel et de la théorie des ensemble.
 
-#### Page du Manuel
+##### Page du Manuel
 
 ```txt
 a = fil vertical, b = fil en diagonal (haut gauche) - c = fil en diagonal (haut droite)
@@ -113,17 +111,17 @@ si la suite abaca est vrais alors coupé le fil 1
 si cbacb est vrai alor coupé le fil 5
 ```
 
-#### Commandes
+##### Commandes
 
 - couper fil [id]: coupe le fil n°[id]
 
-## Module: Terminal
+### Module: Terminal
 
-#### Description et Objectif
+##### Description et Objectif
 
 L'objectif de ce module est d'utuliser des commande bash simple affain de supprimé un fichier ou de récupérer un code qui se trouve dans un fichier.
 
-#### Page du Manuel
+##### Page du Manuel
 
 ```txt
 cd: permet de ...
@@ -132,34 +130,34 @@ pwd: permet de ...
 cat: permet de ...
 ```
 
-#### Commandes
+##### Commandes
 
 - [commands]: effectue une action selon [commands]
 
-## Module: Cryptographie
+### Module: Cryptographie
 
-#### Description et Objectif
+##### Description et Objectif
 
 L'objectif de ce module est d'utuliser de traduite un code secret crypter en binaire, morce, hexadecimal ou juste décaler.
 
-#### Page du Manuel
+##### Page du Manuel
 
 ```txt
 traduction du morce
 binaire
 ```
 
-#### Commandes
+##### Commandes
 
 - [commands]: effectue une action selon [commands]
 
-## Types
+### Types
 
-### Manuel
+#### Manuel
 
 - Page du manuel: `Page`
 
-### Bombe
+#### Bombe
 
 - Bombe: `Bombe`
 
@@ -167,13 +165,13 @@ binaire
 
 - Module: `Module`
 
-### Autre
+#### Autre
 
 - Score: `Score`
 
 
-# Exemple
+## Exemple
 
-## Module: Coupé le bon Fil
+### Module: Coupé le bon Fil
 
-## Module: Terminal (supprimer fichier)
+### Module: Terminal (supprimer fichier)

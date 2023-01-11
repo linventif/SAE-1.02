@@ -1,0 +1,10 @@
+Instruction du Module : Terminal
+
+Votre objectif est de supprimer le fichier qui déclanche la bombe.
+
+Pour cela, il vous devez utuliser les commandes suivantes :
+
+cd : Permet de changer de dossier
+rm : Permet de supprimer un fichier
+ls : Permet de lister les fichiers d'un dossier
+pwd : Permet de savoir dans quel dossier on se trouve
