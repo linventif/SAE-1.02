@@ -13,4 +13,5 @@ Pour cela, il vous suffit de convertir chaque bite en décimal.
 0011 0000 = 48
 1111 1111 = 255
 
+exemple : 0111 1011 | 0111 1011 | 0111 1011 | 0111 1011 = 123.123.123.123
 Rentrer l'ipv4 comme cesi : nb1.nb2.nb3.bn4 (ex:123.123.123.123)

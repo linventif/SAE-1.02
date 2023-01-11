@@ -75,8 +75,9 @@ class Cable{
 
 class IPAddress{
     int[] ip = {0, 0, 0, 0};
-    String[] ipBinary = ipToString(ip);
-    String ipShow = ipBinaryToString(ipBinary)
+    String ipAnswer = "0.0.0.0";
+    String[] ipBinary = new String[]{"00000000", "00000000", "00000000", "00000000"};
+    String ipBinaryShow = "0000 0000 | 0000 0000 | 0000 0000 | 0000 0000";
 }
 
 class Module{
@@ -87,7 +88,6 @@ class Module{
 }
 
 class Bombe{
-    boolean defused = false;
     int focusModule = 0;
     int nbModules = 3;
     int nbModulesResolve = 0;
@@ -110,6 +110,8 @@ class Game{
     Player player = new Player();
     Bombe bombe = new Bombe();
     Manual manual = new Manual();
+    boolean quit = false;
+    boolean cheat = false;
 }
 
 class Defuse extends Program{
@@ -219,6 +221,9 @@ class Defuse extends Program{
 
     // Fonction permettant de verifier si une table contient une valeur
     boolean containsString(String[] table, String value){
+        if (value == null){
+            return false;
+        }
         for (int i = 0; i < length(table, 1); i++){
             if (equals(table[i], value)){
                 return true;
@@ -387,10 +392,8 @@ class Defuse extends Program{
     // Fonction permettant de reinitialiser les paramettre
     void resetSettings(){
         String[][] settings = new String[2][2];
-        settings[0][0] = "TEST";
-        settings[0][1] = "1";
-        settings[1][0] = "TEST2";
-        settings[1][1] = "1";
+        settings[0][0] = "cheat";
+        settings[0][1] = "false";
         saveCSV(settings, "../ressources/csv/settings.csv");
     }
 
@@ -651,6 +654,7 @@ class Defuse extends Program{
     // Fonction permettant d'afficher le menu des parametres
     int parameterMenu(){
         System.out.print("\033[H\033[2J");
+        String[][] settings = csvToTable("../ressources/csv/settings.csv");
         println(getFileContent("../ressources/ascii/logo.txt"));
         println();
         println();
@@ -658,7 +662,12 @@ class Defuse extends Program{
         println("2 - Réinitialiser les Parametres");
         println("3 - Test de Debugage");
         println("4 - Ajouter un Score");
-        println("5 - Retour");
+        if (equals(settings[0][1], "true")){
+            println("5 - Désactiver le Mode Triche");
+        } else {
+            println("5 - Activer le Mode Triche");
+        }
+        println("6 - Retour");
         println();
         println();
         print("Que voulez-vous faire ? ");
@@ -762,6 +771,14 @@ class Defuse extends Program{
         return str;
     }
 
+    String[] ipBinary(int[] ip){
+        String[] ipBinary = new String[length(ip)];
+        for (int i = 0; i < length(ip); i++){
+            ipBinary[i] = numberToBinary(ip[i]);
+        }
+        return ipBinary;
+    }
+
     String ipBinaryToString(String[] ipBinary){
         String str = "";
         for (int i = 0; i < length(ipBinary); i++){
@@ -791,23 +808,27 @@ class Defuse extends Program{
             if (id == 1){
                 resetScoresBoard();
                 wait("Réinitialisation des Scores: OK", 2);
-            }
-            else if (id == 2){
+            } else if (id == 2){
                 resetSettings();
                 wait("Réinitialisation des Parametres: OK", 2);
-            }
-            else if (id == 3){
+            } else if (id == 3){
                 debugageTest();
-            }
-            else if (id == 4){
+            } else if (id == 4){
                 println("Nom du joueur : ");
                 String name = validPseudo(readString());
                 println("Score : ");
                 int score = readInt();
                 addScore(name, score);
                 scoresboard();
-            }
-            else if (id == 5){
+            } else if (id == 5){
+                String[][] settings = csvToTable("../ressources/csv/settings.csv");
+                if (equals(settings[0][1], "true")){
+                    settings[0][1] = "false";
+                } else {
+                    settings[0][1] = "true";
+                }
+                saveCSV(settings, "../ressources/csv/settings.csv");
+            }else if (id == 6){
                 quit = true;
             }
         }
@@ -819,36 +840,19 @@ class Defuse extends Program{
     //                                        //
     // -- // -- // -- // -- // -- // -- // -- //
 
-    initModules(Game game){
+    void initModules(Game game){
         for (int i = 0; i < game.bombe.nbModules; i++){
             String[][] moduleInfo = csvToTable("../ressources/modules/" + getRandomFile("../ressources/modules"));
             game.bombe.modules[i] = new Module();
-           game.bombe.modules[i].name.name = moduleInfo[0][1];
-            if (equals("Binaire", game.bombe.modules[i].name)){
-                
+            game.bombe.modules[i].name = moduleInfo[0][1];
+            println(game.bombe.modules[i].name);
+            if (equals(game.bombe.modules[i].name, "Binaire")){
+                game.bombe.modules[i].ip.ip = new int[]{randomInt(0, 255), randomInt(0, 255), randomInt(0, 255), randomInt(0, 255)};
+                game.bombe.modules[i].ip.ipAnswer = ipToString(game.bombe.modules[i].ip.ip);
+                game.bombe.modules[i].ip.ipBinary = ipBinary(game.bombe.modules[i].ip.ip);
+                game.bombe.modules[i].ip.ipBinaryShow = ipBinaryToString(game.bombe.modules[i].ip.ipBinary);
             }
         }
-
-        /*
-
-
-        int[] ip = new int[4];
-        for (int i = 0; i < length(ip); i++){
-            ip[i] = randomInt(0,255);
-        }
-        String[] ipBinary = new String[4];
-        for (int i = 0; i < length(ipBinary); i++){
-            ipBinary[i] = numberToBinary(ip[i]);
-        }
-        printTable(ipBinary);
-        println(ipBinaryToString(ipBinary));
-        println(ipToString(ip));
-
-        String[] answers = {"A", "B", "C", "D"};
-        String[] correctAnswers = {"A", "B", "C", "D"};
-
-        */
-
     }
 
     void showCable(Module cable){
@@ -923,6 +927,7 @@ class Defuse extends Program{
     // -- // -- // -- // -- // -- // -- // -- //
 
     int selectModule(Game game) {
+        System.out.print("\033[H\033[2J");
         println();
         println();
         println("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
@@ -932,14 +937,17 @@ class Defuse extends Program{
         }
         println();
         println("Quel module voulez vous resoudre ?");
-        int length = game.bombe.nbModules - game.bombe.nbModulesResolve;
-        String [] answers = new String[length];
-        for (int i = 0; i < length(game.bombe.modules); i++){
-            if (!game.bombe.modules[i].resolved){
-                answers[i] = "" + (i + 1);
-            }
+        String[] answers = new String[game.bombe.nbModules];
+        for (int i = 0; i < game.bombe.nbModules; i++){
+            answers[i] = "" + (i + 1);
         }
-        return getAnswer(answers);
+        int id = getAnswer(answers);
+        if (game.bombe.modules[id - 1].resolved){
+            println("Ce module est deja resolu !");
+            delay(1000);
+            return selectModule(game);
+        }
+        return id;
     }
 
     String getModuleState(boolean state){
@@ -959,27 +967,30 @@ class Defuse extends Program{
         println();
         println("Erreur: " + game.player.errors + " / 3");
         println("Module Resolu: " + game.bombe.nbModulesResolve + " / " + game.bombe.nbModules);
+        println("Score: " + clamp(((game.player.score - game.player.errors * 750) + ((int) game.player.time.getTimeSecs() * -2)), 0, 100000));
         println();
         if (game.bombe.focusModule == 0){
             for (int i = 0; i < game.bombe.nbModules; i++){
                 println("Module n°" + (i + 1) + " : " + centerString(game.bombe.modules[i].name, 20) + " : " + getModuleState(game.bombe.modules[i].resolved));
             }
-        } else if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Fils")){
+        } else {
             println();
             println("// -- // -- // -- // -- // -- // -- // -- //");
             println();
-            println(centerString("Module : " + game.bombe.modules[game.bombe.focusModule].name, 44));
+            println(centerString("Module : " + game.bombe.modules[game.bombe.focusModule - 1].name, 44));
             println();
             println();
-
-
-            Module cable = new Module();
-            for (int i = 0; i < 5; i++){
-                cable.cables[i] = new Cable();
-                cable.cables[i].color = getRandomChar(new char[]{'R', 'V', 'B', 'M', 'J'});
+            if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Fils")) {
+                Module cable = new Module();
+                for (int i = 0; i < 5; i++){
+                    cable.cables[i] = new Cable();
+                    cable.cables[i].color = getRandomChar(new char[]{'R', 'V', 'B', 'M', 'J'});
+                }
+                showCable(cable);
+                //cutCable(cable);
+            } else if (equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Binaire")){
+                println("Trouver l'ip de ce serveur : " + game.bombe.modules[game.bombe.focusModule - 1].ip.ipBinaryShow);
             }
-            showCable(cable);
-            //cutCable(cable);
         }
         println();
         println();
@@ -995,6 +1006,7 @@ class Defuse extends Program{
         println(centerString("Que voulez-vous faire ?", 44));
         println();
         println();
+        println("0. Quitte la partie");
         println("1. Manuel - Page Suivante");
         println("2. Manuel - Page Précédente");
         if (game.bombe.focusModule == 0){
@@ -1002,14 +1014,22 @@ class Defuse extends Program{
         } else {
             println("3. Bombe - Retour a la Bombe");
         }
-        if (equals(game.bombe.modules[game.bombe.focusModule].name, "Fils")){
-            println("4. Bombe - Couper un Cable");
+        if (game.bombe.focusModule != 0 && equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Fils")){
+            println("4. Module - Couper un Cable");
+        } else if (game.bombe.focusModule != 0 && equals(game.bombe.modules[game.bombe.focusModule -1].name, "Binaire")){
+            println("4. Module - Entrer l'ip du Serveur");
         }
         println();
         println();
         print("Votre choix: ");
-        int choice = getAnswer(new String[]{"1", "2", "3"});
-        if (choice == 1){
+        String[] answers = new String[]{"0", "1", "2", "3"};
+        if (game.bombe.focusModule != 0){
+            answers = new String[]{"0", "1", "2", "3", "4"};
+        }
+        int choice = getAnswer(answers);
+        if (choice == 0){
+            game.quit = true;
+        } else if (choice == 1){
             game.manual.page = clamp(game.manual.page + 1, 0, game.manual.nbPages);
         } else if (choice == 2){
             game.manual.page = clamp(game.manual.page - 1, 0, game.manual.nbPages);
@@ -1017,9 +1037,27 @@ class Defuse extends Program{
             game.bombe.focusModule = selectModule(game);
         } else if (choice == 3 && game.bombe.focusModule != 0){
             game.bombe.focusModule = 0;
-        } else if (choice == 4 && equals(game.bombe.modules[game.bombe.focusModule].name, "Fils")){
+        } else if (choice == 4 && equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Fils")){
             Module cable = game.bombe.modules[game.bombe.focusModule];
             cutCable(cable);
+        } else if (choice == 4 && equals(game.bombe.modules[game.bombe.focusModule - 1].name, "Binaire")){
+            println("Entrer l'ip du Serveur : ");
+            if (game.cheat){
+                println(game.bombe.modules[game.bombe.focusModule - 1].ip.ipAnswer);
+            }
+            String ip = readString();
+            if (equals(ip, game.bombe.modules[game.bombe.focusModule - 1].ip.ipAnswer)){
+                game.bombe.modules[game.bombe.focusModule - 1].resolved = true;
+                game.bombe.nbModulesResolve++;
+                game.player.score += 2500;
+                println("IP Serveur Valide !");
+                delay(2000);
+                game.bombe.focusModule = 0;
+            } else {
+                game.player.errors++;
+                println("IP Serveur Invalid !");
+                delay(2000);
+            }
         }
     }
 
@@ -1028,25 +1066,27 @@ class Defuse extends Program{
         game.player.name = introduction();
         game.player.time.start();
         game.manual.nbPages = numberOfFiles("../ressources/manual") - 1;
-        initModules();
+        initModules(game);
+        String[][] settings = csvToTable("../ressources/csv/settings.csv");
+        game.cheat = equals(settings[0][1], "true");
         System.out.print("\033[H\033[2J");
-        while (game.player.errors < 3 && !game.bombe.defused){
+        while (game.player.errors < 3 && game.bombe.nbModulesResolve != game.bombe.nbModules && !game.quit){
             playInterface(game);
         }
-        addScore(game.player.name, game.player.score + ((int) game.player.time.getTimeSecs() * -2));
+        addScore(game.player.name, clamp(((game.player.score - game.player.errors * 750) + ((int) game.player.time.getTimeSecs() * -2)), 0, 100000));
         game.player.time.stop();
-        if (game.bombe.defused){
-            defuseScreen(game);
-        } else {
-            deathScreen(game);
+        if (!game.quit){
+            if (game.bombe.nbModulesResolve != game.bombe.nbModules){
+                defuseScreen(game);
+            } else {
+                deathScreen(game);
+            }
         }
         scoresboard();
     }
 
     // Corps du programme
     void algorithm(){
-        // print(morseToString(".... . .-.. .-.. --- / .-- --- .-. .-.. -.."));
-        //println(numberToBinary(10));
         boolean fini = false;
         while (!fini){
             int id = mainMenu();
