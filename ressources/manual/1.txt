@@ -11,3 +11,4 @@ Si le premier fils est vert, coupé le premier fils.
 Si il y'a plus de 1 fils noir, coupé un fil rouge.
 Si le dernier fils est noir, coupé le dernier fils.
 Si il y'au moins 5 fils de la meme couleur, coupé n'importe quel fil.
+Si rien n'est indiquer, coupé le dernier fils.

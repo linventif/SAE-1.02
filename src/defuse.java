@@ -569,10 +569,6 @@ class Defuse extends Program{
         printlnSlow("\u001B[32m" + "Test Function : " + centerString("Repeat Char", 30) + " : Passed" + "\u001B[0m");
     }
 
-    // void testIP(){
-    //     assertEquals("127.0.0.1", 
-    // }
-
     // Fonction permettant de tester la fonction de centerString
     void testCenterString(){
         assertEquals(" a ", centerString("a", 3));
@@ -965,6 +961,8 @@ class Defuse extends Program{
                 sucessModule(game, "Bravo, vous avez réussi le module Cable !");
             } else if (nbRed >= 1 || nbBlack >= 1 || nbGreen >= 1 || nbBlue >= 1 || nbYellow >= 1){
                 sucessModule(game, "Bravo, vous avez réussi le module Cable !");
+            } else if (id == nbCable && !(moduleTemp.cables[id - 1].color == 'B' && nbRed > 2) && !(id == nbCable && nbRed == 0) && !(id == 1 && moduleTemp.cables[id - 1].color == 'V') && !(id == nbCable && moduleTemp.cables[id - 1].color == 'B') && ! (moduleTemp.cables[id - 1].color == 'R' && nbRed > 1) && !(nbRed > 5 || nbBlack > 5 || nbGreen > 5 || nbBlue > 5 || nbYellow > 5) && !(nbRed >= 1 || nbBlack >= 1 || nbGreen >= 1 || nbBlue >= 1 || nbYellow >= 1)){
+                sucessModule(game, "Bravo, vous avez réussi le module Cable !");
             } else {
                 addError(game, "Malheureusement, ce n'est pas le bon cable !");
                 moduleTemp.cables[id - 1].cut = true;
@@ -1189,28 +1187,22 @@ class Defuse extends Program{
         game.errorCost = stringToNumber(settings[2][1]);
         game.player.time.start();
         game.manual.nbPages = numberOfFiles("../ressources/manual") - 1;
-        if (game.cheat){
-            game.player.name = "DEBUG - TEST";
-        } else {
-            game.player.name = introduction();
-        }
+        game.player.name = introduction();
         initModules(game);
         System.out.print("\033[H\033[2J");
         while (game.player.errors < 3 && game.bombe.nbModulesResolve != game.bombe.nbModules && !game.quit){
             playInterface(game);
         }
-        if (!game.cheat){
-            addScore(game.player.name, clamp((game.player.score + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints));
-            game.player.time.stop();
-            if (!game.quit){
-                if (game.bombe.nbModulesResolve == game.bombe.nbModules){
-                    defuseScreen(game);
-                } else {
-                    deathScreen(game);
-                }
+        addScore(game.player.name, clamp((game.player.score + ((int) game.player.time.getTimeSecs() * -2)), 0, game.maxPoints));
+        game.player.time.stop();
+        if (!game.quit){
+            if (game.bombe.nbModulesResolve == game.bombe.nbModules){
+                defuseScreen(game);
+            } else {
+                deathScreen(game);
             }
-            scoresboard();
         }
+        scoresboard();
     }
 
     // Corps du programme
