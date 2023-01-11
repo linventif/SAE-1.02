@@ -10,9 +10,9 @@
 
 - Dépot GitHub : [SAE-1.02](https://github.com/linventif/SAE-1.02)
 
-- Date de création: 2022-12-12
-
 - Version: 1.1
+
+- Support & Help: [Discord Only](https://linventif.fr/discord)
 
 ## Description
 
@@ -39,26 +39,26 @@ Le jeu du Désamorceur consite a désamorcer une bombe en résolvant plusieur pr
 
 ### Paramettres du Jeu
 
-- #### Réinitialiser les Scores
+- Réinitialiser les Scores
 
 Permet de réinitialiser les scores du jeu
 
-- #### Réinitialiser les Paramettres
+- Réinitialiser les Paramettres
 
 Permet de réinitialiser les paramettres du jeu
 
-- #### Test de Debugage
+- Test de Debugage
 
 Permet de lancer les fonctions de test / debugage
 
-- #### Ajouter un Score
+- Ajouter un Score
 
 Permet d'ajouter un score au tableau des scores
 
-- #### Activer le Mode Triche
+- Activer le Mode Triche
 
 Permet d'activer le mode triche du jeu (vous pouvez donc voir les reponse avant de les entrer)
 
-- #### Vitesse du Text
+- Vitesse du Text
 
 Permet de styliser le jeu en ajoutant un temps avant chaque lettre du texte
