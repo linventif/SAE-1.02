@@ -10,7 +10,7 @@ Vous trouverez également des informations sur les
 
 différents modules de la bombe.
 
-Pour naviguer dans le manuel, utilisez les commandes
+Pour naviguer dans le manuel, utilisez les commandes 1 et 2.
 
 ### Page n°1
 
@@ -18,23 +18,24 @@ Instrunction du Module : Fils
 
 Votre objectif est de coupé le bon fil !
 
-les fil on des couleur indiquer par des lettre (r, v, b, j, o, g)
+les fil on des couleur indiquer par des lettre (R, V, B, J, N)
 
-Si il n'y a qu'un seul fil rouge et qu'il est au bord droit, coupé le fils vert.
-Si il n'y a au moins deux fil vert voisin, coupé le fils vert de gauche.
-Si il n'y a qu'un seul fil jaune, coupé le fils rouge.
-Si il y a plus de 3 couleur de fils, coupé le fils rouge
-Si il y a pas de fils bleu, coupé le fils jaune.
-Si il y a plus de 2 fil vert, coupé le fils orange.
-Si aucune des solution précédente n'est valid coupé le fil du millieu.
+Si tout les fils sont d'une couleur différente, coupé n'importe quel fil.
+Si il y'a plus de 2 fils rouge, coupé un fils bleu.
+Si il n'y a pas de fils bleu, coupé le dernier fils.
+Si le premier fils est vert, coupé le premier fils.
+Si il y'a plus de 1 fils noir, coupé un fil rouge.
+Si le dernier fils est noir, coupé le dernier fils.
+Si il y'au moins 5 fils de la meme couleur, coupé n'importe quel fil.
+Si rien n'est indiquer, coupé le dernier fils.
 
 ### Page n°2
 
 Instruction du Module : Binaires
 
-Votre objectif est de trouver le code secret.
+Votre objectif est de trouvé l'ip du serveur pirate.
 
-Pour cela, il vous suffit de convertir chaque chiffre du nombre binaire en décimal.
+Pour cela, il vous suffit de convertir chaque bite en décimal.
 
 0000 0001 = 1
 0000 0010 = 2
@@ -44,6 +45,9 @@ Pour cela, il vous suffit de convertir chaque chiffre du nombre binaire en déci
 0000 1111 = 15
 0011 0000 = 48
 1111 1111 = 255
+
+exemple : 0111 1011 | 0111 1011 | 0111 1011 | 0111 1011 = 123.123.123.123
+Rentrer l'ipv4 comme cesi : nb1.nb2.nb3.bn4 (ex:123.123.123.123)
 
 ### Page n°3
 
@@ -60,15 +64,4 @@ P = .--.  Q = --.-  R = .-.   S = ...   T = -
 U = ..-   V = ...-  W = .--   X = -..-  Y = -.--
 Z = --..
 
-### Page n°4
-
-Instruction du Module : Terminal
-
-Votre objectif est de supprimer le fichier qui déclanche la bombe.
-
-Pour cela, il vous devez utuliser les commandes suivantes :
-
-cd : Permet de changer de dossier
-rm : Permet de supprimer un fichier
-ls : Permet de lister les fichiers d'un dossier
-pwd : Permet de savoir dans quel dossier on se trouve
+Exemple : "BONJOUR" = -... --- -. .--- --- ..- .-.
